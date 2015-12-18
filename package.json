@@ -1,0 +1,31 @@
+{
+  "name": "cgb-server",
+  "version": "1.0.0",
+  "description": "cgb-server by danny chan",
+  "main": "app.js",
+  "dependencies": {
+    "async": "^1.5.0",
+    "formidable": "^1.0.17",
+    "mongojs": "^1.4.1",
+    "restify": "^4.0.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DannyChanSz/cgb-server.git"
+  },
+  "keywords": [
+    "node",
+    "cms",
+    "restify"
+  ],
+  "author": "DannyChan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DannyChanSz/cgb-server/issues"
+  },
+  "homepage": "https://github.com/DannyChanSz/cgb-server#readme"
+}
