@@ -1,5 +1,5 @@
-var db = require("../db/db.js");
-var entities = db.db.collection("docs");
+var config = require("../config/config.js");
+var entities = config.db.collection("docs");
 
 
 
@@ -23,7 +23,7 @@ var testData = [{
 module.exports = {
 
     findAll: function findAll(req, res, next) {
-        db.resHead(res);
+        config.resHead(res);
         //res.send(200,testData);
 
         entities.find().limit(20).sort({
@@ -43,10 +43,10 @@ module.exports = {
     },
 
     find: function find(req, res, next) {
-        db.resHead(res);
+        config.resHead(res);
         console.log(JSON.stringify(req.params.id));
         entities.findOne({
-            _id: db.mongojs.ObjectId(req.params.id)
+            _id: config.mongojs.ObjectId(req.params.id)
         }, function(err, success) {
             console.log('Response success ' + success);
             console.log('Response error ' + err);
@@ -59,7 +59,7 @@ module.exports = {
     },
 
     postNew: function postNew(req, res, next) {
-        db.resHead(res);
+        config.resHead(res);
         console.log('posted:'+JSON.stringify(req.params));
         var entity = req.params;
         entity.postedOn = new Date();
@@ -81,7 +81,7 @@ module.exports = {
     },
 
     update: function update(req, res, next) {
-        db.resHead(res);
+        config.resHead(res);
         var entity = req.params;
 
 
@@ -91,7 +91,7 @@ module.exports = {
         delete entity._id;
 
         entities.update({
-            _id: db.mongojs.ObjectId(id)
+            _id: config.mongojs.ObjectId(id)
         }, {
             $set: entity
         }, function(err, success) {
@@ -107,10 +107,10 @@ module.exports = {
     },
 
     remove: function remove(req, res, next) {
-        db.resHead(res);
+        config.resHead(res);
 
         entities.remove({
-            _id: db.mongojs.ObjectId(req.params.id)
+            _id: config.mongojs.ObjectId(req.params.id)
         }, function(err, success) {
             console.log('Response success ' + success);
             console.log('Response error ' + err);

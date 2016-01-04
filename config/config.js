@@ -3,13 +3,14 @@ var connection_string = '127.0.0.1:27017/cgbdb';
 var dbName = mongojs(connection_string, ['cgbdb']);
 
 
-var db = {
+module.exports =  {
     mongojs: mongojs,
     db: dbName,
+    jwtTokenSecret:'123456',
     resHead: function(res) {        
         res.charSet('utf8');
     }
 
 }
 
-module.exports = db;
+

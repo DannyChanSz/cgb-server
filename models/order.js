@@ -1,14 +1,25 @@
 var config = require("../config/config.js");
-var entities = config.db.collection("categories");
+var entities = config.db.collection("orders");
 
 
 
-
+var testData = [
+    {
+        "orderId": "0",
+        "productName": "高密度聚乙烯PPD沙发客3023",
+        "productAmount": "4",
+        "date": "2015-02-05",
+        "state": "我要报价",
+        "trackInfo": false
+    }
+];
 
 module.exports = {
 
     findAll: function findAll(req, res, next) {
         config.resHead(res);
+        //res.send(200,testData);
+
         entities.find().limit(20).sort({
             postedOn: -1
         }, function(err, success) {
@@ -43,10 +54,11 @@ module.exports = {
 
     postNew: function postNew(req, res, next) {
         config.resHead(res);
+        console.log('posted:'+JSON.stringify(req.params));
         var entity = req.params;
         entity.postedOn = new Date();
 
-        console.log(JSON.stringify(req.params));
+        
 
 
 
@@ -73,7 +85,7 @@ module.exports = {
         delete entity._id;
 
         entities.update({
-            _id: db.mongojs.ObjectId(id)
+            _id: config.mongojs.ObjectId(id)
         }, {
             $set: entity
         }, function(err, success) {
@@ -89,10 +101,10 @@ module.exports = {
     },
 
     remove: function remove(req, res, next) {
-        db.resHead(res);
+        config.resHead(res);
 
         entities.remove({
-            _id: db.mongojs.ObjectId(req.params.id)
+            _id: config.mongojs.ObjectId(req.params.id)
         }, function(err, success) {
             console.log('Response success ' + success);
             console.log('Response error ' + err);
