@@ -1,6 +1,6 @@
 var App = require('./alidayu.js');
 
-var app = new App('23293402', '6bacac873e5622d30605b1a7f0fde649');
+
 
 
 module.exports = {
@@ -12,8 +12,8 @@ module.exports = {
      * @return {[type]}       [description]
      */
     smsSend: function(phone, type, code, next) {
-
         var signType = getSignType(type);
+        var app = new App('23293402', '6bacac873e5622d30605b1a7f0fde649');
         //发短信
         app.smsSend({
             sms_free_sign_name: signType.key,
@@ -25,7 +25,7 @@ module.exports = {
             sms_template_code: 'SMS_4065690'
         }, function(res) {
 
-            console.log('sms:', res);
+            //console.log('sms:', res);
             next(res);
         });
     }
