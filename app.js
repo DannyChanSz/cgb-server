@@ -10,6 +10,11 @@ var jwt = require('jwt-simple')
 var moment = require('moment');
 var jwtauth = require('./models/jwtauth.js');
 
+// //sms test
+// var sms = require("./plugin/sms/sms.js");
+// sms.smsSend('13510271102','注册验证','272810',function(res){
+//     console.log('success');
+// });
 
 
 var ip_addr = '0.0.0.0';
