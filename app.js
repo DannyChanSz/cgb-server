@@ -50,18 +50,18 @@ server.get({
     version: '0.0.1'
 }, userCtrl.checkPhone);
 //发送验证码
-server.get({
+server.post({
     path: PATH_TEST + '/sendPhoneToken/:phone',
     version: '0.0.1'
 }, tokenMiddle, userCtrl.sendPhoneToken);
 //注册
-server.get({
+server.post({
     path: PATH_TEST + '/regist/:userType/:phone/:code/:password',
     version: '0.0.1'
 }, tokenMiddle, userCtrl.regist);
 
 //登陆
-server.get({
+server.post({
     path: PATH_TEST + '/login/:phone/:password/:userType',
     version: '0.0.1'
 }, userCtrl.login);
