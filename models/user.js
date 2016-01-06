@@ -1,5 +1,6 @@
 var config = require("../config/config.js");
 var crypto = require('crypto');
+var strHelper = require("../tools/stringHelper.js");
 
 
 /**
@@ -29,15 +30,7 @@ module.exports = {
             }
         });
     },
-    /**
-     * 发送手机验证码
-     * @param  {[type]}   phone [description]
-     * @param  {Function} done  [description]
-     * @return {[type]}         [无]
-     */
-    // sendPhoneConfirmCode: function(phone, done) {
 
-    // },
     /**
      * 注册
      * @param  {[type]}   phone       [description]
@@ -48,6 +41,18 @@ module.exports = {
      * @return {[type]}               [成功失败]
      */
     regist: function(phone, password, userType, done) {
+
+
+        var userName = generateUserName();
+        var passwordSha = getHashPassword(password);
+        var entity = {
+            userName: userName,
+            phone: phone,
+            userType: userType,
+            hashPassword: passwordSha,
+            isLockout: false
+
+        }
         user.save(entity, function(err, success) {
             return done({
                 success: success,
@@ -67,6 +72,49 @@ module.exports = {
      */
     login: function(phone, password, userType, done) {
 
+
+        var searchEntity = {
+            phone: phone,
+            hashPassword: getHashPassword(password),
+            userType: userType
+        };
+        console.info('searchEntity',searchEntity);
+        user.findOne(searchEntity, function(err, success) {
+            if (success) {
+                done({
+                    success: true,
+                    data: success
+                });
+            } else {
+                done({
+                    success: false,
+                    data: err
+                });
+            }
+        });
+
     }
 
 };
+
+//生成用户名
+var generateUserName = function() {
+
+        var userName = strHelper.generateNumCode(10);
+        user.findOne({
+            userName: userName
+        }, function(err, success) {
+            if (success) {
+                return generateUserName()
+            } else {
+                return userName;
+            }
+        });
+    }
+    //生成加密密码
+var getHashPassword = function(password) {
+    var sha1 = crypto.createHash('sha1');
+    sha1.update(password);
+    var passwordSha = sha1.digest('hex');
+    return passwordSha;
+}
