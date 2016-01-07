@@ -54,10 +54,18 @@ module.exports = {
 
         }
         user.save(entity, function(err, success) {
-            return done({
-                success: success,
-                err: err
-            });
+            if (success) {
+                return done({
+                    status: true,
+                    data: success
+                });
+            } else {
+                return done({
+                    status: false,
+                    err: err
+                });
+            }
+
         });
 
 
@@ -78,7 +86,7 @@ module.exports = {
             hashPassword: getHashPassword(password),
             userType: userType
         };
-        console.info('searchEntity',searchEntity);
+        //console.info('searchEntity',searchEntity);
         user.findOne(searchEntity, function(err, success) {
             if (success) {
                 done({

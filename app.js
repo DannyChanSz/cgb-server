@@ -54,12 +54,11 @@ server.post({
     path: PATH_TEST + '/sendPhoneToken/:phone',
     version: '0.0.1'
 }, tokenMiddle, userCtrl.sendPhoneToken);
-//注册
+//注册 
 server.post({
-    path: PATH_TEST + '/regist/:userType/:phone/:code/:password',
+    path: PATH_TEST + '/regist/:userType/:phone/:code/:password/:userProfile',
     version: '0.0.1'
 }, tokenMiddle, userCtrl.regist);
-
 //登陆
 server.post({
     path: PATH_TEST + '/login/:phone/:password/:userType',

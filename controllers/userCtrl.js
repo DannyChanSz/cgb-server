@@ -1,9 +1,11 @@
 var phoneTokens = require('../models/phoneTokens.js');
 var user = require("../models/user.js");
+var userProfile = require("../models/userProfile.js");
 var sms = require("../plugin/sms/sms.js");
 var config = require("../config/config.js");
 var moment = require('moment');
 var jwt = require('jwt-simple');
+
 
 module.exports = {
     //手机是否存在
@@ -36,25 +38,33 @@ module.exports = {
         var code = req.params.code;
         var password = req.params.password;
         var userType = req.params.userType;
+        var userProfile = req.params.userProfile;
 
         user.checkPhone(phone, function(isExistPhone) {
             //手机号不存在
-            //console.info('isExistPhone',isExistPhone);
             if (!isExistPhone) {
 
                 phoneTokens.verificateIdentityCode(tokens, phone, code, function(verificateSuccess) {
                     //手机验证成功
-                    //console.info('verificateSuccess',verificateSuccess);
                     if (verificateSuccess) {
                         //注册
                         user.regist(phone, password, userType, function(resgistResult) {
 
-                            res.json({
-                                status: resgistResult.success,
-                                errMsg: resgistResult.err
-                            });
-                            res.end();
+                            if (resgistResult.status) {
+                                userProfile.AddProfile(resgistResult.data.userId, userProfile);
 
+                                res.json({
+                                    status: true,
+                                    data: resgistResult.data
+                                });
+                                res.end();
+                            } else {
+                                res.json({
+                                    status: false,
+                                    errMsg: resgistResult.err
+                                });
+                                res.end();
+                            }
                         });
 
                     } else {
@@ -79,7 +89,7 @@ module.exports = {
     },
     //按身份登陆
     login: function(req, res, done) {
-    	config.resHead(res);
+        config.resHead(res);
         user.login(req.params.phone, req.params.password, req.params.userType, function(loginResult) {
 
             if (loginResult.success) {
@@ -96,7 +106,6 @@ module.exports = {
                     user: loginResult.data
                 });
                 return next();
-
 
             } else {
                 res.json({
