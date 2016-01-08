@@ -90,19 +90,66 @@ module.exports = {
         user.findOne(searchEntity, function(err, success) {
             if (success) {
                 done({
-                    success: true,
+                    status: true,
                     data: success
                 });
             } else {
                 done({
-                    success: false,
+                    status: false,
                     data: err
                 });
             }
         });
 
-    }
+    },
+    /**
+     * 修改密码
+     * @param  {[type]} userId      [description]
+     * @param  {[type]} oldpassword [description]
+     * @param  {[type]} newPassword [description]
+     * @return {[type]}             [description]
+     */
+    changePassword: function(userId, oldpassword, newPassword, done) {
+        var searchEntity = {
+            _id: config.mongojs.ObjectId(userId),
+            hashPassword: getHashPassword(oldpassword),
+        };
+        user.findOne(searchEntity, function(err, success) { //查询用户
+            if (success) {
 
+                var userEntity = success;
+                userEntity.hashPassword = getHashPassword(newPassword);
+
+                user.update({ //更新密码
+                    _id: userEntity._id
+                }, {
+                    $set: userEntity
+                }, function(upErr, upSuccess) {
+                    if (upSuccess) {
+                        done({
+                            status: true,
+                            data: upSuccess
+                        });
+                    } else {
+                        done({
+                            status: false,
+                            err: '更新失败'
+                        });
+                    }
+
+                });
+
+            } else {
+                done({
+                    status: false,
+                    err: err
+                });
+            }
+
+
+
+        })
+    }
 
 
 

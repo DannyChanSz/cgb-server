@@ -86,7 +86,7 @@ server.post({
 //修个密码
 //oldPassword,newPassword
 server.post({
-    path: PATH_USER + '/changeProfile',
+    path: PATH_USER + '/changePassword',
     version: '0.0.1'
 }, jwtauth,userCtrl.changePassword);
 

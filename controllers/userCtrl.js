@@ -58,7 +58,7 @@ module.exports = {
                         userModel.regist(phone, password, userType, function(resgistResult) {
 
                             if (resgistResult.status) {
-                                userProfileModel.AddProfile(resgistResult.data._id, profile);
+                                userProfileModel.addProfile(resgistResult.data._id, profile);
 
                                 res.json({
                                     status: true,
@@ -99,7 +99,7 @@ module.exports = {
         config.resHead(res);
         userModel.login(req.params.phone, req.params.password, req.params.userType, function(loginResult) {
 
-            if (loginResult.success) {
+            if (loginResult.status) {
                 var expires = moment().add(7, 'days').valueOf();
                 var token = jwt.encode({
                     iss: loginResult.data._id,
@@ -130,7 +130,7 @@ module.exports = {
         config.resHead(res);
         var userId = req.userId;
 
-        userProfileModel.GetProfileByUser(userId, function(getResult) {
+        userProfileModel.getProfileByUser(userId, function(getResult) {
 
             if (getResult.status) {
 
@@ -153,10 +153,53 @@ module.exports = {
     },
     //修个个人资料
     changeProfile: function(req, res, done) {
+        config.resHead(res);
+        var userId = req.userId;
+        var profile = req.params;
+
+        userProfileModel.updateProfileByUser(userId,profile,function(upResult){
+
+          if (upResult.status) {
+                res.json({
+                    status: true,
+                    data: upResult.data
+                });
+                res.end();
+            } else {
+                res.json({
+                    status: false,
+                    errMsg: upResult.err
+                });
+                res.end();
+            }
+
+
+        })
+
 
     },
     //修改密码
     changePassword: function(req, res, done) {
+        config.resHead(res);
+        var userId = req.userId;
+
+        userModel.changePassword(userId, req.params.oldPassword, req.params.newPassword, function(upResult) {
+            if (upResult.status) {
+                res.json({
+                    status: true,
+                    data: upResult.data
+                });
+                res.end();
+            } else {
+                res.json({
+                    status: false,
+                    errMsg: '请输入正确的原始密码'
+                });
+                res.end();
+            }
+
+
+        })
 
     }
 

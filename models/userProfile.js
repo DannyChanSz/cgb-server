@@ -12,14 +12,14 @@ module.exports = {
      * @param {[type]} userId      [所属user编号]
      * @param {[type]} companyName [description]
      */
-    AddProfile: function(userId, profile, done) {
+    addProfile: function(userId, profile, done) {
 
         var entity = profile;
         entity.userId = config.mongojs.ObjectId(userId);
 
         entities.save(entity, function(err, success) {
             return done({
-                success: success,
+                status: success,
                 err: err
             });
         });
@@ -29,27 +29,55 @@ module.exports = {
      * @param {[type]}   userId [description]
      * @param {Function} done   [description]
      */
-    GetProfileByUser: function(userId, done) {
+    getProfileByUser: function(userId, done) {
 
         var objUserId = config.mongojs.ObjectId(userId);
-console.log('objUserId',objUserId,typeof(objUserId))
+
         entities.findOne({
             userId: objUserId
         }, function(err, success) {
             if (success) {
                 done({
-                    success: true,
+                    status: true,
                     data: success
                 });
             } else {
                 done({
-                    success: false,
+                    status: false,
                     data: err
                 });
             }
         });
+    },
+    /**
+     * 更新用户资料
+     * @param {[type]}   userId  [description]
+     * @param {[type]}   profile [自定义资料参数]
+     * @param {Function} done    [description]
+     */
+    updateProfileByUser: function(userId, profile, done) {
 
+        var objUserId = config.mongojs.ObjectId(userId);
+        profile.userId = objUserId;
 
+        entities.update({ 
+            userId: objUserId
+        }, {
+            $set: profile
+        }, function(err, success) {
+            if (success) {
+                done({
+                    status: true,
+                    data: success
+                });
+            } else {
+                done({
+                    status: false,
+                    err: err
+                });
+            }
+
+        });
     }
 
 
