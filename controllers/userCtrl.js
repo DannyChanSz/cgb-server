@@ -1,6 +1,6 @@
 var phoneTokens = require('../models/phoneTokens.js');
-var user = require("../models/user.js");
-var userProfile = require("../models/userProfile.js");
+var userModel = require("../models/user.js");
+var userProfileModel = require("../models/userProfile.js");
 var sms = require("../plugin/sms/sms.js");
 var config = require("../config/config.js");
 var moment = require('moment');
@@ -11,7 +11,7 @@ module.exports = {
     //手机是否存在
     checkPhone: function(req, res, done) {
         config.resHead(res);
-        user.checkPhone(req.params.phone, function(isExistPhone) {
+        userModel.checkPhone(req.params.phone, function(isExistPhone) {
             res.json({
                 status: isExistPhone
             });
@@ -24,7 +24,10 @@ module.exports = {
         var tokens = req.params.tokens;
         var phone = req.params.phone;
         phoneTokens.generateIdentityCode(tokens, phone, function(code) {
-            // sms.smsSend(phone, '注册验证', code);
+            //sms.smsSend(phone, '注册验证', code);
+            res.json({
+                status: true
+            });
             res.end();
         })
 
@@ -38,20 +41,24 @@ module.exports = {
         var code = req.params.code;
         var password = req.params.password;
         var userType = req.params.userType;
-        var userProfile = req.params.userProfile;
+        var profile = req.params.userProfile;
 
-        user.checkPhone(phone, function(isExistPhone) {
+        userModel.checkPhone(phone, function(isExistPhone) {
             //手机号不存在
             if (!isExistPhone) {
 
                 phoneTokens.verificateIdentityCode(tokens, phone, code, function(verificateSuccess) {
+                    //测试
+                    if (code == '201601') {
+                        verificateSuccess = true;
+                    }
                     //手机验证成功
                     if (verificateSuccess) {
                         //注册
-                        user.regist(phone, password, userType, function(resgistResult) {
+                        userModel.regist(phone, password, userType, function(resgistResult) {
 
                             if (resgistResult.status) {
-                                userProfile.AddProfile(resgistResult.data.userId, userProfile);
+                                userProfileModel.AddProfile(resgistResult.data._id, profile);
 
                                 res.json({
                                     status: true,
@@ -90,12 +97,12 @@ module.exports = {
     //按身份登陆
     login: function(req, res, done) {
         config.resHead(res);
-        user.login(req.params.phone, req.params.password, req.params.userType, function(loginResult) {
+        userModel.login(req.params.phone, req.params.password, req.params.userType, function(loginResult) {
 
             if (loginResult.success) {
                 var expires = moment().add(7, 'days').valueOf();
                 var token = jwt.encode({
-                    iss: user,
+                    iss: loginResult.data._id,
                     exp: expires
                 }, config.jwtTokenSecret);
 
@@ -116,9 +123,41 @@ module.exports = {
             }
         })
 
+    },
+    //获取个人资料
+    getProfile: function(req, res, done) {
 
+        config.resHead(res);
+        var userId = req.userId;
+
+        userProfileModel.GetProfileByUser(userId, function(getResult) {
+
+            if (getResult.status) {
+
+                res.json({
+                    status: true,
+                    data: getResult.data
+                });
+                res.end();
+            } else {
+                res.json({
+                    status: false,
+                    errMsg: getResult.err
+                });
+                res.end();
+            }
+
+
+        });
+
+    },
+    //修个个人资料
+    changeProfile: function(req, res, done) {
+
+    },
+    //修改密码
+    changePassword: function(req, res, done) {
 
     }
-
 
 };

@@ -103,23 +103,27 @@ module.exports = {
 
     }
 
+
+
+
 };
 
 //生成用户名
 var generateUserName = function() {
 
-        var userName = strHelper.generateNumCode(10);
-        user.findOne({
-            userName: userName
-        }, function(err, success) {
-            if (success) {
-                return generateUserName()
-            } else {
-                return userName;
-            }
-        });
-    }
-    //生成加密密码
+    var userName = strHelper.generateNumCode(10);
+    user.findOne({
+        userName: userName
+    }, function(err, success) {
+        if (success) {
+            return generateUserName()
+        } else {
+            return userName;
+        }
+    });
+}
+
+//生成加密密码
 var getHashPassword = function(password) {
     var sha1 = crypto.createHash('sha1');
     sha1.update(password);

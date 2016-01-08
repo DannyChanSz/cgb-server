@@ -1,4 +1,5 @@
 var jwt = require('jwt-simple');
+var config = require("../config/config.js");
 
 module.exports = function(req, res, next) {
     // code goes here
@@ -6,13 +7,14 @@ module.exports = function(req, res, next) {
     var token = (req.body && req.body.access_token) || (req.query && req.query.access_token) || req.headers['x-access-token'];
     if (token) {
         try {
-            console.log('start decode...'+token);
-            var decoded = jwt.decode(token, '123456789');
-            console.log(decoded);
+            console.log('start decode...' + token);
+            var decoded = jwt.decode(token, config.jwtTokenSecret);
+            console.log('decoded', decoded);
             // handle token here
 
             if (decoded.exp <= Date.now()) {
-                res.end('Access token has expired', 400);
+                res.statusCode = 401;
+                res.end('Access token has expired');
             }
 
             /*User.findOne({
@@ -20,16 +22,20 @@ module.exports = function(req, res, next) {
             }, function(err, user) {
                 req.user = user;
             });*/
-            console.log(decoded.iss);
-            req.user = decoded.iss;
+
+            req.userId = decoded.iss;
+            //console.log('token user', req.userId)
             return next();
 
         } catch (err) {
             console.log('err:' + err);
-            return next();
+            res.statusCode = 401;
+            res.end('err:' + err);
         }
     } else {
         console.log('no token');
-        next();
+        res.statusCode = 401;
+        res.end('Login first')
+            //next();
     }
 };
