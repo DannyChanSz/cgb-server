@@ -7,9 +7,9 @@ module.exports = function(req, res, next) {
     var token = (req.body && req.body.access_token) || (req.query && req.query.access_token) || req.headers['x-access-token'];
     if (token) {
         try {
-            console.log('start decode...' + token);
+            //console.log('start decode...' + token);
             var decoded = jwt.decode(token, config.jwtTokenSecret);
-            console.log('decoded', decoded);
+            //console.log('decoded', decoded);
             // handle token here
 
             if (decoded.exp <= Date.now()) {
@@ -28,12 +28,12 @@ module.exports = function(req, res, next) {
             return next();
 
         } catch (err) {
-            console.log('err:' + err);
+            //console.log('err:' + err);
             res.statusCode = 401;
             res.end('err:' + err);
         }
     } else {
-        console.log('no token');
+        //console.log('no token');
         res.statusCode = 401;
         res.end('Login first')
             //next();

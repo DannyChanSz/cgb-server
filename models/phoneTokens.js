@@ -40,7 +40,7 @@ module.exports = {
         };
 
         tokens.push(token);
-        console.info('tokens',tokens);
+        //console.info('tokens',tokens);
         done(code);
 
     },

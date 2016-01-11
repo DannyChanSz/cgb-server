@@ -5,6 +5,7 @@ phoneTokens.checkTokenTimeoutStar(tokenContainer); //检查过期服务
 
 
 var userModel = require("../models/user.js");
+var orderModel = require("../models/order.js");
 
 module.exports = {
 
@@ -24,9 +25,9 @@ module.exports = {
 
                 if (getResult.status) {
 
-					req.userInfo = getResult.data;
-					//console.info('md-getUserInfo',req.userInfo);
-					done();
+                    req.userInfo = getResult.data;
+                    //console.info('md-getUserInfo',req.userInfo);
+                    done();
 
                 } else {
                     res.end("can not find user");
@@ -37,8 +38,25 @@ module.exports = {
         } else {
             res.end("use getUserInfo after jwtauth");
         }
+    },
+    getOrderInfo: function(req, res, done) {
+        if (req.params.orderName) {
+
+            orderModel.getByOrderName(req.params.orderName,
+                function(orderResult) {
+                    if (orderResult.status) {
+                        req.orderInfo = orderResult.data;
+                        done();
+                    } else {
+                        res.end('middleware: order is not found');
+                    }
+
+                });
 
 
+        } else {
+            res.end('can not find  req.params.orderName');
+        }
     }
 
 }

@@ -4,7 +4,7 @@ var strHelper = require("../tools/stringHelper.js");
 
 /**
  * 订单
- * id,name,productName,productAmount,productUnit,unitPrice,totlePrice,shipAddress,state,purUserId,supUserId,createdOn
+ * id,name,productName,productAmount,productUnit,unitPrice,sumPrice,shipAddress,state,purUserId,supUserId,createdOn
  * name:订单编号,state:状态（报价 待支付 已支付 已发货 已完成 已关闭）
  */
 var entities = config.db.collection("order");
@@ -40,6 +40,41 @@ module.exports = {
             }
 
         });
+
+    },
+    /**
+     * 更新订单
+     * @param  {[type]}   order [订单实体]
+     * @param  {Function} done  [description]
+     * @return {[type]}         [description]
+     */
+    updateOrder: function(order, done) {
+        order._id = config.mongojs.ObjectId(order._id);
+        order.purUserId = config.mongojs.ObjectId(order.purUserId);
+        order.supUserId = config.mongojs.ObjectId(order.supUserId);
+
+
+        entities.update({
+            _id: order._id
+        }, {
+            $set: order
+        }, function(err, upSuccess) {
+            if (upSuccess) {
+                done({
+                    status: true,
+                    data: upSuccess
+                });
+            } else {
+                done({
+                    status: false,
+                    err: '更新失败'
+                });
+            }
+
+        })
+
+
+
 
     },
 
@@ -97,6 +132,7 @@ module.exports = {
             }
         });
     }
+
 
 
 }

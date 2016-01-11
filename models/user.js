@@ -6,7 +6,7 @@ var async = require("async");
 
 /**
  *  用户
- *  id,userName,phone,userType,hashPassword,isLockout
+ *  id,userName,phone,userType,hashPassword,isLockout,createdOn
  */
 var user = config.db.collection("user");
 
@@ -49,7 +49,7 @@ module.exports = {
             }
         }, function(err, results) {
             if (!err) {
-                console.log('results',results)
+                //console.log('results',results)
                 var user = results.getUser;
                 user.userProfile = results.getProfile;
                 done({
@@ -104,7 +104,8 @@ module.exports = {
             phone: phone,
             userType: userType,
             hashPassword: passwordSha,
-            isLockout: false
+            isLockout: false,
+            createdOn:new Date()
 
         }
         user.save(entity, function(err, success) {

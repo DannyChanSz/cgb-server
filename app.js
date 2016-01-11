@@ -122,8 +122,51 @@ server.get({
     version: '0.0.1'
 }, jwtauth, orderCtrl.getByOrderName);
 
+//添加报价单
+//unitPrice,sumPrice,orderName
+server.post({
+    path: PATH_ORDER + '/setQuotation',
+    version: '0.0.1'
+}, jwtauth, middlewares.getUserInfo, orderCtrl.setQuotation);
 
+//获取供应商本人报价单
+server.get({
+    path: PATH_ORDER + '/getSupQuotation/:orderName',
+    version: '0.0.1'
+}, jwtauth, middlewares.getUserInfo, orderCtrl.getSupQuotation);
 
+//获取采购商订单的报价单列表
+server.get({
+    path: PATH_ORDER + '/getPurQuotations/:orderName',
+    version: '0.0.1'
+}, jwtauth, middlewares.getUserInfo, orderCtrl.getPurQuotations);
+
+//选择订单报价
+//orderName,quotationId
+server.post({
+    path: PATH_ORDER + '/chooseOrderQuotation',
+    version: '0.0.1'
+}, jwtauth, middlewares.getUserInfo,middlewares.getOrderInfo, orderCtrl.chooseOrderQuotation);
+
+//发货
+//orderName
+server.post({
+    path: PATH_ORDER + '/sendGoods',
+    version: '0.0.1'
+}, jwtauth, middlewares.getUserInfo,middlewares.getOrderInfo, orderCtrl.sendGoods);
+
+//获取订单物流列表
+server.get({
+    path: PATH_ORDER + '/getLogistics/:orderName',
+    version: '0.0.1'
+}, jwtauth, middlewares.getUserInfo,middlewares.getOrderInfo, orderCtrl.getLogistics);
+
+//添加物流信息
+//orderName,info
+server.post({
+    path: PATH_ORDER + '/addLogistics',
+    version: '0.0.1'
+}, jwtauth, middlewares.getUserInfo,middlewares.getOrderInfo, orderCtrl.addLogistics);
 
 
 
