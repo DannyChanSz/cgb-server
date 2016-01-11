@@ -129,10 +129,13 @@ module.exports = {
 
         config.resHead(res);
         var userId = req.userId;
+        var userinfo = req.userInfo;
 
         userProfileModel.getProfileByUser(userId, function(getResult) {
 
             if (getResult.status) {
+
+                getResult.data.phone = userinfo.phone;//加电话信息
 
                 res.json({
                     status: true,
@@ -157,9 +160,9 @@ module.exports = {
         var userId = req.userId;
         var profile = req.params;
 
-        userProfileModel.updateProfileByUser(userId,profile,function(upResult){
+        userProfileModel.updateProfileByUser(userId, profile, function(upResult) {
 
-          if (upResult.status) {
+            if (upResult.status) {
                 res.json({
                     status: true,
                     data: upResult.data

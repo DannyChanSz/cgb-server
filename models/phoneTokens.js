@@ -40,7 +40,7 @@ module.exports = {
         };
 
         tokens.push(token);
-        console.info(tokens);
+        console.info('tokens',tokens);
         done(code);
 
     },
@@ -79,7 +79,7 @@ module.exports = {
 //是否存在手机+验证码
 var isExistPhoneAndCode = function(tokens, phone, code) {
     var codeList = findTokenByPhone(tokens, phone);
-    console.info('codeList',codeList,phone);
+    // console.info('codeList',codeList,phone);
     for (i in codeList) {
         var nowTime = new Date();
          console.info('isExistPhoneAndCode',codeList[i].code,code,codeList[i].endTime,nowTime);

@@ -11,18 +11,22 @@ var jwtauth = require('./models/jwtauth.js');
 
 //new
 //public
-var tokenContainer = new Array();
-var tokenMiddle = function(req, res, done) {
-    req.params.tokens = tokenContainer;
-    done();
-}
-var phoneTokens = require('./models/phoneTokens.js');
-phoneTokens.checkTokenTimeoutStar(tokenContainer);//检查过期服务
+var middlewares = require('./middleware/middlewares.js');
+// var tokenContainer = new Array();
+
+// var tokenMiddle = function(req, res, done) {
+//     req.params.tokens = tokenContainer;
+//     done();
+// }
+// middlewares ={};
+// middlewares.tokenMiddle =tokenMiddle;
+// var phoneTokens = require('./models/phoneTokens.js');
+// phoneTokens.checkTokenTimeoutStar(tokenContainer);//检查过期服务
 
 //private
 var userCtrl = require('./controllers/userCtrl.js');
 var orderCtrl = require('./controllers/orderCtrl.js');
-var keywordCtrl= require('./controllers/keywordCtrl.js');
+var keywordCtrl = require('./controllers/keywordCtrl.js');
 
 var ip_addr = '0.0.0.0';
 var port = '8083';
@@ -57,13 +61,13 @@ server.get({
 server.post({
     path: PATH_USER + '/sendPhoneToken',
     version: '0.0.1'
-}, tokenMiddle, userCtrl.sendPhoneToken);
+}, middlewares.tokenMiddle, userCtrl.sendPhoneToken);
 //注册 
 //userType,phone,code,password,userProfile
 server.post({
     path: PATH_USER + '/regist',
     version: '0.0.1'
-}, tokenMiddle, userCtrl.regist);
+}, middlewares.tokenMiddle, userCtrl.regist);
 //登陆
 //phone,password,userType
 server.post({
@@ -71,24 +75,23 @@ server.post({
     version: '0.0.1'
 }, userCtrl.login);
 
-
 //获取个资料
 server.get({
     path: PATH_USER + '/getProfile',
     version: '0.0.1'
-}, jwtauth,userCtrl.getProfile);
+}, jwtauth, middlewares.getUserInfo, userCtrl.getProfile);
 //修个资料
 //任意自定义参数
 server.post({
     path: PATH_USER + '/changeProfile',
     version: '0.0.1'
-}, jwtauth,userCtrl.changeProfile);
+}, jwtauth, userCtrl.changeProfile);
 //修个密码
 //oldPassword,newPassword
 server.post({
     path: PATH_USER + '/changePassword',
     version: '0.0.1'
-}, jwtauth,userCtrl.changePassword);
+}, jwtauth, userCtrl.changePassword);
 
 
 //====订单路由====
@@ -99,19 +102,30 @@ var PATH_ORDER = '/order';
 server.post({
     path: PATH_ORDER + '/createOrder',
     version: '0.0.1'
-}, jwtauth,orderCtrl.addOrder);
+}, jwtauth, middlewares.getUserInfo, orderCtrl.addOrder);
 
 //获取新自身订单及其他报价状态订单(登陆权限)
 server.get({
     path: PATH_ORDER + '/getMyNewOrders/:endTime',
     version: '0.0.1'
-}, jwtauth,orderCtrl.getMyNewOrders);
+}, jwtauth, orderCtrl.getMyNewOrders);
 
 //获取历史自身订单及其他报价状态订单(登陆权限)
 server.get({
     path: PATH_ORDER + '/getMyOldOrders/:starTime/:count',
     version: '0.0.1'
-}, jwtauth,orderCtrl.getMyOldOrders);
+}, jwtauth, orderCtrl.getMyOldOrders);
+
+//获取订单信息
+server.get({
+    path: PATH_ORDER + '/getByOrderName/:orderName',
+    version: '0.0.1'
+}, jwtauth, orderCtrl.getByOrderName);
+
+
+
+
+
 
 //===关键字路由===
 var PATH_KEYWORD = '/keywords';
@@ -119,23 +133,11 @@ var PATH_KEYWORD = '/keywords';
 server.get({
     path: PATH_KEYWORD + '/getKeywords',
     version: '0.0.1'
-}, jwtauth,keywordCtrl.getKeywords);
+}, jwtauth, keywordCtrl.getKeywords);
 
 //获取关键字列表
 //keywords:['x','xxx'],
 server.post({
     path: PATH_KEYWORD + '/setKeywords',
     version: '0.0.1'
-}, jwtauth,keywordCtrl.setKeywords);
-
-
-
-
-
-
-
-
-
-
-
-
+}, jwtauth, keywordCtrl.setKeywords);

@@ -4,7 +4,7 @@ var strHelper = require("../tools/stringHelper.js");
 
 /**
  * 订单
- * id,name,productName,productAmount,productUnit,shipAddress,state,purUserId,supUserId,createdOn
+ * id,name,productName,productAmount,productUnit,unitPrice,totlePrice,shipAddress,state,purUserId,supUserId,createdOn
  * name:订单编号,state:状态（报价 待支付 已支付 已发货 已完成 已关闭）
  */
 var entities = config.db.collection("order");
@@ -73,9 +73,30 @@ module.exports = {
             }
         });
 
+    },
+    /**
+     * 订单号获取订单
+     * @param  {[type]}   orderName [description]
+     * @param  {Function} done      [description]
+     * @return {[type]}             [description]
+     */
+    getByOrderName: function(orderName, done) {
+        entities.findOne({
+            name: orderName
+        }, function(err, success) {
+            if (success) {
+                return done({
+                    status: true,
+                    data: success
+                });
+            } else {
+                return done({
+                    status: false,
+                    err: err
+                });
+            }
+        });
     }
-
-
 
 
 }

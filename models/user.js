@@ -1,7 +1,8 @@
 var config = require("../config/config.js");
 var crypto = require('crypto');
 var strHelper = require("../tools/stringHelper.js");
-
+var userProfileDb = config.db.collection("userProfile");
+var async = require("async");
 
 /**
  *  用户
@@ -12,6 +13,59 @@ var user = config.db.collection("user");
 
 
 module.exports = {
+
+    /**
+     * 用户编号获取获取用户
+     * @param  {[type]}   userId [description]
+     * @param  {Function} done  [description]
+     * @return {[type]}         [description]
+     */
+    getByUserId: function(userId, done) {
+        var objUserId = config.mongojs.ObjectId(userId)
+
+        async.parallel({
+            getUser: function(callback) {
+                user.findOne({
+                    _id: objUserId
+                }, function(err, success) {
+                    if (success) {
+                        callback(null, success);
+                    } else {
+                        callback(err);
+                    }
+                })
+            },
+            getProfile: function(callback) {
+                userProfileDb.findOne({
+                    userId: objUserId
+                }, function(err, success) {
+                    if (success) {
+                        callback(null, success);
+                    } else {
+                        callback(err);
+                    }
+
+                })
+            }
+        }, function(err, results) {
+            if (!err) {
+                console.log('results',results)
+                var user = results.getUser;
+                user.userProfile = results.getProfile;
+                done({
+                    status: true,
+                    data: user
+                });
+            } else {
+                done({
+                    status: false,
+                    err: err
+                });
+            }
+
+        });
+
+    },
 
     /**
      * 检测手机注册状态
@@ -159,12 +213,16 @@ module.exports = {
 var generateUserName = function() {
 
     var userName = strHelper.generateNumCode(10);
+    // console.log('generateUserName',userName);
     user.findOne({
         userName: userName
     }, function(err, success) {
+        // console.info('generateUserName-success',success)
         if (success) {
+            // console.info('generateUserName-success--true');
             return generateUserName()
         } else {
+            // console.info('generateUserName-success--false');
             return userName;
         }
     });
