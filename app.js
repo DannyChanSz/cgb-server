@@ -168,6 +168,14 @@ server.post({
     version: '0.0.1'
 }, jwtauth, middlewares.getUserInfo,middlewares.getOrderInfo, orderCtrl.addLogistics);
 
+//完成订单
+//orderName
+server.post({
+    path: PATH_ORDER + '/finshOrder',
+    version: '0.0.1'
+}, jwtauth, middlewares.getUserInfo,middlewares.getOrderInfo, orderCtrl.finshOrder);
+
+
 
 
 //===关键字路由===

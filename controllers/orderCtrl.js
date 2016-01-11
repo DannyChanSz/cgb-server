@@ -629,6 +629,44 @@ module.exports = {
             res.end();
         }
 
+    },
+    //完成订单
+    finshOrder: function(req, res, done) {
+        config.resHead(res);
+        var userinfo = req.userInfo;
+        var order = req.orderInfo;
+
+        if (userinfo.userType == '采购商' && order.purUserId.toString() == userinfo._id.toString() && order.state == '已发货') {
+
+            order.state = '已完成';
+            orderModel.updateOrder(order, function(orderResult) {
+                if (orderResult.status) {
+
+                    res.json({
+                        status: true,
+                        data: orderResult.data
+                    });
+                    res.end();
+                } else {
+                    res.json({
+                        status: false,
+                        errMsg: orderResult.err
+                    });
+                    res.end();
+                }
+
+            })
+
+
+        } else {
+            res.json({
+                status: false,
+                errMsg: '没有权限'
+            });
+            res.end();
+        }
+
+
     }
 
 
