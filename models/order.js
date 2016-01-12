@@ -79,17 +79,15 @@ module.exports = {
     },
 
     /**
-     * 获取自身订单及报价中订单
+     * 获取供应商订单或报价订单
      * @param  {[type]}   userId [description]
      * @param  {Function} done   [description]
      * @return {[type]}          [description]
      */
-    getOrderByUserOrQuoteState: function(userId, done) {
+    getOrderBySupUserId: function(userId, done) {
         var objUserId = config.mongojs.ObjectId(userId);
         entities.find({
             '$or': [{
-                purUserId: objUserId
-            }, {
                 supUserId: objUserId
             }, {
                 state: '报价'
@@ -109,6 +107,32 @@ module.exports = {
         });
 
     },
+    /**
+     * 获取采购商订单
+     * @param  {[type]}   userId [description]
+     * @param  {Function} done   [description]
+     * @return {[type]}          [description]
+     */
+    getOrderByPurUserId: function(userId, done) {
+        var objUserId = config.mongojs.ObjectId(userId);
+        entities.find({
+            purUserId: objUserId
+        }, function(err, success) {
+            if (success) {
+                return done({
+                    status: true,
+                    data: success
+                });
+            } else {
+                return done({
+                    status: false,
+                    err: err
+                });
+            }
+        });
+    },
+
+
     /**
      * 订单号获取订单
      * @param  {[type]}   orderName [description]

@@ -4,7 +4,7 @@ var config = require("../config/config.js");
 
 /**
  * 关键字
- * id,userId,values
+ * id,userId,keywords
  */
 var entities = config.db.collection("keyword");
 

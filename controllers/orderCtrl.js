@@ -4,8 +4,11 @@ var userModel = require("../models/user.js");
 var userProfileModel = require("../models/userProfile.js");
 var quotationModel = require("../models/quotation.js");
 var logisticsModel = require("../models/logistics.js");
+var keywordModel = require("../models/keyword.js");
 var _ = require("underscore");
 var async = require("async");
+
+var MAX_QUEUE_COUNT = 5;
 
 module.exports = {
 
@@ -51,65 +54,136 @@ module.exports = {
     getMyNewOrders: function(req, res, done) {
 
         config.resHead(res);
-        var userId = req.userId;
-        var endtime = new Date(req.params.endTime);
-        //添加userType
+        var userinfo = req.userInfo;
+        var userId = userinfo._id;
 
-        orderModel.getOrderByUserOrQuoteState(userId, function(result) {
-            if (result.status) {
-                //过滤
-                var onTime = _.filter(result.data, function(o) {
-                    return (o.createdOn > endtime)
-                });
-                //排序
-                var orders = _.sortBy(onTime, 'createdOn').reverse();
+        var oldCount = parseInt(req.params.oldCount);
+        var oldMaxCount = parseInt(req.params.oldMaxCount);
 
-                res.json({
-                    status: true,
-                    data: orders
-                });
-                res.end();
-            } else {
-                res.json({
-                    status: false,
-                    errMsg: result.err
-                });
-                res.end();
-            }
+        //订单过滤
+        var orderFilter = function(orders) {
 
-        });
+            //排序
+            var orders = _.sortBy(orders, 'createdOn').reverse();
+            var takeCount = orders.length - oldMaxCount + oldCount;
+            //console.info('takeCount', takeCount);
+            var result = _.first(orders, takeCount);
+            return result;
+
+        }
+
+
+        if (userinfo.userType == '供应商') {
+
+            getSupOrderViews(userId, orderFilter, function(viewResult) {
+                if (viewResult.status) {
+                    res.json({
+                        status: true,
+                        data: viewResult.data
+                    });
+                    res.end();
+                } else {
+                    res.json({
+                        status: false,
+                        errMsg: viewResult.err
+                    });
+                    res.end();
+                }
+            });
+
+
+        } else {
+            getPurOrderViews(userId, orderFilter, function(viewResult) {
+                if (viewResult.status) {
+                    res.json({
+                        status: true,
+                        data: viewResult.data
+                    });
+                    res.end();
+                } else {
+                    res.json({
+                        status: false,
+                        errMsg: viewResult.err
+                    });
+                    res.end();
+                }
+            });
+        }
+
     },
     //获取历史订单列表[待添加权限]
     getMyOldOrders: function(req, res, done) {
         config.resHead(res);
-        var userId = req.userId;
-        var starTime = new Date(req.params.starTime);
-        var count = req.params.count;
+        var userinfo = req.userInfo;
+        var userId = userinfo._id;
 
-        orderModel.getOrderByUserOrQuoteState(userId, function(result) {
-            if (result.status) {
-                //过滤
-                var onTime = _.filter(result.data, function(o) {
-                    return (o.createdOn < starTime)
-                });
-                //排序
-                var orders = _.sortBy(onTime, 'createdOn').reverse();
+        //订单过滤
+        var orderFilter = function(orders) {
+            var count = parseInt(req.params.count);
+            var oldCount = parseInt(req.params.oldCount);
+            var oldMaxCount = orders.length;
 
-                res.json({
-                    status: true,
-                    data: orders.slice(0, count)
-                });
-                res.end();
-            } else {
-                res.json({
-                    status: false,
-                    errMsg: result.err
-                });
-                res.end();
+            if (req.params.oldMaxCount && req.params.oldMaxCount != '0') {
+                oldMaxCount = parseInt(req.params.oldMaxCount);
             }
 
-        });
+
+            //排序
+            var orders = _.sortBy(orders, 'createdOn').reverse();
+            var startIndex = orders.length - oldMaxCount;
+            var takeCount = count + oldCount;
+            //console.info('startIndex', startIndex, 'takeCount', takeCount);
+            var result = orders.slice(startIndex, startIndex + takeCount);
+            return result;
+        }
+
+
+
+        if (userinfo.userType == '供应商') {
+
+            getSupOrderViews(userId, orderFilter, function(viewResult) {
+                if (viewResult.status) {
+                    res.json({
+                        status: true,
+                        data: viewResult.data
+                    });
+                    res.end();
+                } else {
+                    res.json({
+                        status: false,
+                        errMsg: viewResult.err
+                    });
+                    res.end();
+                }
+            });
+
+
+        } else {
+
+            getPurOrderViews(userId, orderFilter, function(viewResult) {
+                if (viewResult.status) {
+                    res.json({
+                        status: true,
+                        data: viewResult.data
+                    });
+                    res.end();
+                } else {
+                    res.json({
+                        status: false,
+                        errMsg: viewResult.err
+                    });
+                    res.end();
+                }
+            });
+
+
+        }
+
     },
+
+
+
+
     //订单号获取订单信息（供应商/采购商权限）
     getByOrderName: function(req, res, done) {
         config.resHead(res);
@@ -365,7 +439,7 @@ module.exports = {
                             }
                         })
 
-                    }, 5);
+                    }, MAX_QUEUE_COUNT);
 
                     q.push(quotations, function(err, quotation) {
                         console.info('quotation', quotation);
@@ -571,7 +645,7 @@ module.exports = {
                     var logisticsList = _.sortBy(logisticsResult.data, 'createdOn').reverse();
                     res.json({
                         status: true,
-                        errMsg: logisticsList
+                        data: logisticsList
                     });
                     res.end();
                 } else {
@@ -591,7 +665,6 @@ module.exports = {
             });
             res.end();
         }
-
     },
     //添加物流信息(供应商权限)
     addLogistics: function(req, res, done) {
@@ -628,7 +701,6 @@ module.exports = {
             });
             res.end();
         }
-
     },
     //完成订单
     finshOrder: function(req, res, done) {
@@ -665,13 +737,164 @@ module.exports = {
             });
             res.end();
         }
-
-
     }
 
 
+}
+
+//获取供应商订单视图
+var getSupOrderViews = function(userId, orderFilter, done) {
+    async.auto({
+            getOrderBySupUserId: function(callback) {
+                orderModel.getOrderBySupUserId(userId, function(result) {
+                    if (result.status) {
+                        callback(null, result.data);
+                    } else {
+                        callback('getOrderBySupUserId', null);
+                    }
+
+                });
+
+            },
+            filterSupUserKeyWord: ['getOrderBySupUserId', function(callback, results) {
+                keywordModel.getkeywordsByUser(userId, function(result) {
+                    if (result.status) {
+                        var orders = results.getOrderBySupUserId;
+                        var filterOrders = new Array();
+                        var keywords = result.data.keywords;
+
+                        //console.info('orders', orders, 'keywords', keywords);
+                        _.each(orders, function(o, oi, olist) {
+                        	//console.info(oi,o.productName)
+                            var isExist = false;
+                            _.each(keywords, function(k, ki, klist) {
+                                if (!isExist) {
+                                    if (o.productName.indexOf(k) > -1) {
+                                        filterOrders.push(o)
+                                        isExist = true;
+                                    }
+                                }
+
+                            })
+                        });
+
+                        //console.info('filterOrders', filterOrders);
+                        callback(null, filterOrders);
+                    } else {
+                        callback('未添加关键字', null);
+                    }
+                })
+            }],
+            getOrderQuotationViews: ['getOrderBySupUserId', 'filterSupUserKeyWord', function(callback, results) {
 
 
+                var orders = orderFilter(results.filterSupUserKeyWord);
 
 
+                var orderViews = new Array();
+
+                var q = async.queue(function(order, qCallback) {
+
+                    quotationModel.getQuotationsByUserAndOrder(userId, order._id, function(quoResult) {
+                        order.isExistQuotation = quoResult.status;
+                        orderViews.push(order);
+                        qCallback();
+                    });
+                }, MAX_QUEUE_COUNT);
+
+                q.push(orders);
+
+                q.drain = function() {
+
+                    callback(null, {
+                        maxCount: results.filterSupUserKeyWord.length,
+                        orders: orderViews
+                    });
+                }
+
+            }]
+
+        },
+        function(err, results) {
+            if (!err) {
+                done({
+                    status: true,
+                    data: {
+                        maxCount: results.getOrderQuotationViews.maxCount,
+                        orders: results.getOrderQuotationViews.orders
+                    }
+                });
+
+            } else {
+                done({
+                    status: false,
+                    err: err
+                });
+
+            }
+        })
+}
+
+//获取采购商订单视图
+var getPurOrderViews = function(userId, orderFilter, done) {
+    async.auto({
+            getOrderByPurUserId: function(callback) {
+                orderModel.getOrderByPurUserId(userId, function(result) {
+                    if (result.status) {
+                        callback(null, result.data);
+                    } else {
+                        callback('getOrderByPurUserId', null);
+                    }
+
+                });
+
+            },
+            getOrderQuotationViews: ['getOrderByPurUserId', function(callback, results) {
+
+                var orders = orderFilter(results.getOrderByPurUserId);
+                var orderViews = new Array();
+
+                var q = async.queue(function(order, qCallback) {
+
+                    quotationModel.getQutationsByOrder(order._id, function(quoResult) {
+                        if (quoResult.status) {
+                            order.quotationCount = quoResult.data.length;
+                        }
+
+                        orderViews.push(order);
+                        qCallback();
+                    });
+                }, MAX_QUEUE_COUNT);
+
+                q.push(orders);
+
+                q.drain = function() {
+
+                    callback(null, {
+                        maxCount: results.getOrderByPurUserId.length,
+                        orders: orderViews
+                    });
+                }
+
+            }]
+
+        },
+        function(err, results) {
+            if (!err) {
+                done({
+                    status: true,
+                    data: {
+                        maxCount: results.getOrderQuotationViews.maxCount,
+                        orders: results.getOrderQuotationViews.orders
+                    }
+                });
+
+            } else {
+                done({
+                    status: false,
+                    err: err
+                });
+
+            }
+        })
 }
