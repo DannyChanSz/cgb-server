@@ -395,6 +395,39 @@ module.exports = {
         var userinfo = req.userInfo;
         if (userinfo.userType == '采购商') {
 
+            var pageIndex = req.params.pageIndex;
+            var count = req.params.count;
+            var quotationFliter = function(dataArray, pageIndex, count) {
+
+
+                if ((!pageIndex) || pageIndex == 0) { //错误数据
+                    pageIndex = 1;
+                }
+                var maxCount = dataArray.length;
+                pageIndex = parseInt(pageIndex);
+                count = parseInt(count);
+
+                var totolPage = parseInt(maxCount / count) ;
+                if (maxCount % count != 0) {
+                    totolPage++;
+                }
+
+                var pageIndex = pageIndex > totolPage ? 1 : pageIndex;
+                var start = (pageIndex - 1) * count;
+                var end = start + count;
+
+                //console.info('page!!!start', start, 'end', end)
+
+                var pageData = dataArray.slice(start, end);
+
+                return {
+                    pageData: pageData,
+                    pageIndex: pageIndex,
+                    totolPage:totolPage
+                }
+
+            }
+
             async.auto({
                 //获取订单
                 getOrder: function(callback) {
@@ -424,7 +457,11 @@ module.exports = {
                 //报价单会员信息
                 getQutationsUserInfo: ['getQutationsByOrder', function(callback, results) {
 
-                    var quotations = results.getQutationsByOrder;
+                    var pageQutations = quotationFliter(results.getQutationsByOrder, pageIndex, count);
+
+                    var quotations = pageQutations.pageData;
+               
+
                     var quosWithUser = new Array();
 
                     var q = async.queue(function(quotation, qcb) {
@@ -442,13 +479,19 @@ module.exports = {
                     }, MAX_QUEUE_COUNT);
 
                     q.push(quotations, function(err, quotation) {
-                        console.info('quotation', quotation);
+                        //console.info('quotation', quotation);
                         quosWithUser.push(quotation);
 
                     });
 
                     q.drain = function() {
-                        callback(null, quosWithUser);
+                        var quosWithUserResult = {
+                            quotations: quotations,
+                            pageIndex: pageQutations.pageIndex,
+                            totolPage:pageQutations.totolPage
+                        };
+
+                        callback(null, quosWithUserResult);
                     }
 
                 }]
@@ -490,6 +533,7 @@ module.exports = {
 
         if (userinfo.userType == '采购商') {
 
+            console.log('!!!', userinfo._id, order.purUserId, order.state)
             if (userinfo._id.toString() == order.purUserId.toString() && order.state == '报价') {
 
                 async.auto({
@@ -509,7 +553,7 @@ module.exports = {
                         order.unitPrice = quotation.unitPrice;
                         order.sumPrice = quotation.sumPrice;
                         order.supUserId = quotation.userId;
-                        order.state = '未支付';
+                        order.state = '待支付';
 
 
                         orderModel.updateOrder(order, function(orderResult) {
@@ -568,7 +612,7 @@ module.exports = {
 
         if (userinfo.userType == '供应商') {
 
-            if (userinfo._id.toString() == order.supUserId.toString() && (order.state == '未支付' || order.state == '已支付')) {
+            if (userinfo._id.toString() == order.supUserId.toString() && (order.state == '待支付' || order.state == '已支付')) {
 
                 //更新订单状态
                 //添加物流记录
@@ -765,7 +809,7 @@ var getSupOrderViews = function(userId, orderFilter, done) {
 
                         //console.info('orders', orders, 'keywords', keywords);
                         _.each(orders, function(o, oi, olist) {
-                        	//console.info(oi,o.productName)
+                            //console.info(oi,o.productName)
                             var isExist = false;
                             _.each(keywords, function(k, ki, klist) {
                                 if (!isExist) {

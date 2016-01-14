@@ -8,7 +8,7 @@ var register = require("./models/register.js");
 var jwt = require('jwt-simple')
 var moment = require('moment');
 var jwtauth = require('./models/jwtauth.js');
-
+var config = require('./config/config.js');
 //new
 //public
 var middlewares = require('./middleware/middlewares.js');
@@ -40,8 +40,25 @@ server.use(restify.queryParser());
 // server.pre(restify.pre.sanitizePath());
 server.use(restify.bodyParser());
 restify.CORS.ALLOW_HEADERS.push('x-access-token');
+restify.CORS.ALLOW_HEADERS.push('x-app-version');
 server.use(restify.CORS());
 server.use(restify.fullResponse());
+
+//版本检测
+server.pre(function(req, res, next) {
+
+    var app_version = req.headers['x-app-version'];
+    //console.log(app_version, config.app_info.app_version, app_version == config.app_info.app_version)
+    if (app_version == config.app_info.app_version) {
+        next();
+    } else {
+
+        res.statusCode = 403;
+        res.json(config.app_info);
+        res.end();
+    }
+
+})
 
 server.listen(port, ip_addr, function() {
     console.log('%s listening at %s ', server.name, server.url);
@@ -146,8 +163,9 @@ server.get({
 }, jwtauth, middlewares.getUserInfo, orderCtrl.getSupQuotation);
 
 //获取采购商订单的报价单列表
+//pageIndex:页码 count:请求数量
 server.get({
-    path: PATH_ORDER + '/getPurQuotations/:orderName',
+    path: PATH_ORDER + '/getPurQuotations/:orderName/:pageIndex/:count',
     version: '0.0.1'
 }, jwtauth, middlewares.getUserInfo, orderCtrl.getPurQuotations);
 
