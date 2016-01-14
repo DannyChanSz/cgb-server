@@ -35,7 +35,9 @@ var server = restify.createServer({
     name: "cgb-server"
 });
 
+
 server.use(restify.queryParser());
+// server.pre(restify.pre.sanitizePath());
 server.use(restify.bodyParser());
 restify.CORS.ALLOW_HEADERS.push('x-access-token');
 server.use(restify.CORS());
@@ -49,6 +51,7 @@ server.listen(port, ip_addr, function() {
 //路由
 
 //====用户路由====
+///controller/action/:param1:param2:param3
 
 var PATH_USER = '/user';
 //检查手机存在
@@ -87,7 +90,7 @@ server.post({
     version: '0.0.1'
 }, jwtauth, userCtrl.changeProfile);
 //修个密码
-//oldPassword,newPassword
+//oldPassword,password
 server.post({
     path: PATH_USER + '/changePassword',
     version: '0.0.1'
@@ -106,7 +109,6 @@ server.post({
 
 
 
-
 //获取新自身订单及其他报价状态订单(登陆权限)
 //oldCount:当前页面记录条数  oldMaxCount:最近一次请求返回的所有记录总数
 server.get({
@@ -117,7 +119,7 @@ server.get({
 //获取历史自身订单及其他报价状态订单(登陆权限)
 //count：要请求的数量 oldCount:当前页面记录条数 oldMaxCount:最近一次请求返回的所有记录总数
 server.get({
-    path: PATH_ORDER + '/getMyOldOrders/:count/:oldCount/:oldMaxCount?',
+    path: PATH_ORDER + '/getMyOldOrders/:count/:oldCount/:oldMaxCount',
     version: '0.0.1'
 }, jwtauth, middlewares.getUserInfo, orderCtrl.getMyOldOrders);
 

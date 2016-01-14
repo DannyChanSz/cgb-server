@@ -24,7 +24,10 @@ module.exports = {
         var tokens = req.params.tokens;
         var phone = req.params.phone;
         phoneTokens.generateIdentityCode(tokens, phone, function(code) {
-            //sms.smsSend(phone, '注册验证', code);
+            sms.smsSend(phone, '注册验证', code, function(smsRes) {
+                //console.info(smsRes);
+
+            });
             res.json({
                 status: true
             });
@@ -117,7 +120,7 @@ module.exports = {
             } else {
                 res.json({
                     status: false,
-                    user: loginResult.data
+                    errMsg: '用户名或密码不存在'
                 });
                 return next();
             }
@@ -135,7 +138,7 @@ module.exports = {
 
             if (getResult.status) {
 
-                getResult.data.phone = userinfo.phone;//加电话信息
+                getResult.data.phone = userinfo.phone; //加电话信息
 
                 res.json({
                     status: true,
@@ -186,7 +189,7 @@ module.exports = {
         config.resHead(res);
         var userId = req.userId;
 
-        userModel.changePassword(userId, req.params.oldPassword, req.params.newPassword, function(upResult) {
+        userModel.changePassword(userId, req.params.oldPassword, req.params.password, function(upResult) {
             if (upResult.status) {
                 res.json({
                     status: true,

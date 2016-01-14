@@ -33,56 +33,66 @@ module.exports = {
         var userId = req.userId;
         var keywords = req.params.keywords;
 
-        keywordModel.getkeywordsByUser(userId, function(result) {
+        if (keywords.length) {
+            keywordModel.getkeywordsByUser(userId, function(result) {
 
-            if (result.status) {
+                if (result.status) {
 
-                keywordModel.updateUserKeywords(result.data._id, userId, keywords, function(upResult) {
+                    keywordModel.updateUserKeywords(result.data._id, userId, keywords, function(upResult) {
 
-                    if (upResult.status) {
-                    	
-                        res.json({
-                            status: true,
-                            data: upResult.data
-                        });
-                        res.end();
+                        if (upResult.status) {
 
-                    } else {
-                        res.json({
-                            status: false,
-                            errMsg: upResult.err
-                        });
-                        res.end();
-                    }
+                            res.json({
+                                status: true,
+                                data: upResult.data
+                            });
+                            res.end();
 
-
-                });
+                        } else {
+                            res.json({
+                                status: false,
+                                errMsg: upResult.err
+                            });
+                            res.end();
+                        }
 
 
-            } else {
-                //添加
-                keywordModel.addUserKeywords(userId, keywords, function(addResult) {
-
-                    if (addResult.status) {
-                        res.json({
-                            status: true,
-                            data: addResult.data
-                        });
-                        res.end();
-
-                    } else {
-
-                        res.json({
-                            status: false,
-                            errMsg: result.err
-                        });
-                        res.end();
-                    }
-                });
+                    });
 
 
-            }
-        })
+                } else {
+                    //添加
+                    keywordModel.addUserKeywords(userId, keywords, function(addResult) {
+
+                        if (addResult.status) {
+                            res.json({
+                                status: true,
+                                data: addResult.data
+                            });
+                            res.end();
+
+                        } else {
+
+                            res.json({
+                                status: false,
+                                errMsg: result.err
+                            });
+                            res.end();
+                        }
+                    });
+
+
+                }
+            })
+        } else {
+            res.json({
+                status: false,
+                errMsg: '关键字格式错误'
+            });
+            res.end();
+        }
+
+
     }
 
 
