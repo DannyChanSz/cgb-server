@@ -13,7 +13,7 @@ module.exports = {
     app_info: {
         app_version: '0.0.1',
         app_ios_path: 'http//www.epipe.cn/download/cgb.ipa',
-        app_andriod_path: 'http//www.epipe.cn/download/cgb.ipa'
+        app_andriod_path: 'http//www.epipe.cn/download/cgb.apk'
     }
 
 

@@ -407,7 +407,7 @@ module.exports = {
                 pageIndex = parseInt(pageIndex);
                 count = parseInt(count);
 
-                var totolPage = parseInt(maxCount / count) ;
+                var totolPage = parseInt(maxCount / count);
                 if (maxCount % count != 0) {
                     totolPage++;
                 }
@@ -423,7 +423,7 @@ module.exports = {
                 return {
                     pageData: pageData,
                     pageIndex: pageIndex,
-                    totolPage:totolPage
+                    totolPage: totolPage
                 }
 
             }
@@ -460,7 +460,7 @@ module.exports = {
                     var pageQutations = quotationFliter(results.getQutationsByOrder, pageIndex, count);
 
                     var quotations = pageQutations.pageData;
-               
+
 
                     var quosWithUser = new Array();
 
@@ -488,7 +488,7 @@ module.exports = {
                         var quosWithUserResult = {
                             quotations: quotations,
                             pageIndex: pageQutations.pageIndex,
-                            totolPage:pageQutations.totolPage
+                            totolPage: pageQutations.totolPage
                         };
 
                         callback(null, quosWithUserResult);
@@ -533,7 +533,7 @@ module.exports = {
 
         if (userinfo.userType == '采购商') {
 
-            console.log('!!!', userinfo._id, order.purUserId, order.state)
+            //console.log('!!!', userinfo._id, order.purUserId, order.state)
             if (userinfo._id.toString() == order.purUserId.toString() && order.state == '报价') {
 
                 async.auto({
