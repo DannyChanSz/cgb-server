@@ -46,7 +46,7 @@ server.use(restify.fullResponse());
 
 //版本检测
 server.use(function(req, res, next) {
-    //next();
+    next();
 
     var app_version = req.headers['x-app-version'];
     //console.log(app_version, config.app_info.app_version, app_version == config.app_info.app_version)
@@ -65,6 +65,16 @@ server.listen(port, ip_addr, function() {
     console.log('%s listening at %s ', server.name, server.url);
 });
 
+// //测试
+// server.get({
+//     path: '/appManager',
+//     version: '0.0.1'
+// }, function(req, res, next) {
+
+//     console.info(req);
+//     res.end();
+
+// });
 
 
 //路由
