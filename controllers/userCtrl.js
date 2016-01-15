@@ -61,6 +61,12 @@ module.exports = {
                         userModel.regist(phone, password, userType, function(resgistResult) {
 
                             if (resgistResult.status) {
+                                if (!profile) {
+                                    profile = {};
+                                }
+
+                                console.info('reg', resgistResult.data._id, profile);
+
                                 userProfileModel.addProfile(resgistResult.data._id, profile);
 
                                 res.json({

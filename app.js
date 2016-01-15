@@ -46,8 +46,8 @@ server.use(restify.fullResponse());
 
 //版本检测
 server.use(function(req, res, next) {
-    next();
 
+console.info('somebody')
     var app_version = req.headers['x-app-version'];
     //console.log(app_version, config.app_info.app_version, app_version == config.app_info.app_version)
     if (app_version == config.app_info.app_version) {
