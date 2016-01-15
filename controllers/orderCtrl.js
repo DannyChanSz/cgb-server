@@ -181,9 +181,6 @@ module.exports = {
 
     },
 
-
-
-
     //订单号获取订单信息（供应商/采购商权限）
     getByOrderName: function(req, res, done) {
         config.resHead(res);
@@ -839,11 +836,64 @@ var getSupOrderViews = function(userId, orderFilter, done) {
 
                 var q = async.queue(function(order, qCallback) {
 
-                    quotationModel.getQuotationsByUserAndOrder(userId, order._id, function(quoResult) {
-                        order.isExistQuotation = quoResult.status;
+  
+                    async.auto({
+                        //报价数量
+                        getQuotationDetail: function(qutationDetailCallback) {
+                            quotationModel.getQutationsByOrder(order._id, function(quoResult) {
+                                var quotationCount = 0;
+                                if (quoResult.status) {
+                                    quotationCount = quoResult.data.length;
+                                }
+
+                                qutationDetailCallback(null, quotationCount);
+                            });
+
+                        },
+                        //供应商信息
+                        getSupUserDetail: function(supUserDetailCallback) {
+                            if (order.supUserId) {
+                                userModel.getByUserId(order.supUserId, function(supUserResult) {
+                                    if (supUserResult.status) {
+                                        supUserDetailCallback(null, supUserResult.data);
+                                    } else {
+                                        supUserDetailCallback(null, null);
+                                    }
+                                })
+                            } else {
+                                supUserDetailCallback(null, null);
+                            }
+
+                        },
+                        //采购商信息
+                        getPurUserDetail: function(purUserDetailCallback) {
+
+                            if (order.purUserId) {
+                                userModel.getByUserId(order.purUserId, function(purUserResult) {
+                                    if (purUserResult.status) {
+                                        purUserDetailCallback(null, purUserResult.data);
+                                    } else {
+                                        purUserDetailCallback(null, null);
+                                    }
+                                })
+                            } else {
+                                purUserDetailCallback(null, null);
+                            }
+
+                        }
+
+                    }, function(err, results) {
+
+                        order.quotationCount = results.getQuotationDetail;
+                        order.supUer = results.getSupUserDetail;
+                        order.purUer = results.getPurUserDetail;
+
+                        //console.info(orderViews.length);
                         orderViews.push(order);
+
                         qCallback();
-                    });
+                    })
+
                 }, MAX_QUEUE_COUNT);
 
                 q.push(orders);
@@ -900,14 +950,65 @@ var getPurOrderViews = function(userId, orderFilter, done) {
 
                 var q = async.queue(function(order, qCallback) {
 
-                    quotationModel.getQutationsByOrder(order._id, function(quoResult) {
-                        if (quoResult.status) {
-                            order.quotationCount = quoResult.data.length;
+
+                    async.auto({
+                        //报价数量
+                        getQuotationDetail: function(qutationDetailCallback) {
+                            quotationModel.getQutationsByOrder(order._id, function(quoResult) {
+                                var quotationCount = 0;
+                                if (quoResult.status) {
+                                    quotationCount = quoResult.data.length;
+                                }
+
+                                qutationDetailCallback(null, quotationCount);
+                            });
+
+                        },
+                        //供应商信息
+                        getSupUserDetail: function(supUserDetailCallback) {
+                            if (order.supUserId) {
+                                userModel.getByUserId(order.supUserId, function(supUserResult) {
+                                    if (supUserResult.status) {
+                                        supUserDetailCallback(null, supUserResult.data);
+                                    } else {
+                                        supUserDetailCallback(null, null);
+                                    }
+                                })
+                            } else {
+                                supUserDetailCallback(null, null);
+                            }
+
+                        },
+                        //采购商信息
+                        getPurUserDetail: function(purUserDetailCallback) {
+
+                            if (order.purUserId) {
+                                userModel.getByUserId(order.purUserId, function(purUserResult) {
+                                    if (purUserResult.status) {
+                                        purUserDetailCallback(null, purUserResult.data);
+                                    } else {
+                                        purUserDetailCallback(null, null);
+                                    }
+                                })
+                            } else {
+                                purUserDetailCallback(null, null);
+                            }
+
                         }
 
+                    }, function(err, results) {
+
+                        order.quotationCount = results.getQuotationDetail;
+                        order.supUer = results.getSupUserDetail;
+                        order.purUer = results.getPurUserDetail;
+
+                        //console.info(orderViews.length);
                         orderViews.push(order);
+
                         qCallback();
-                    });
+                    })
+
+
                 }, MAX_QUEUE_COUNT);
 
                 q.push(orders);
