@@ -6,7 +6,8 @@ var async = require("async");
 
 /**
  *  用户
- *  id,userName,phone,userType,hashPassword,isLockout,createdOn
+ *  ifAuditPass：是否审核通过
+ *  id,userName,phone,userType,hashPassword,isLockout,createdOn,ifAuditPass
  */
 var user = config.db.collection("user");
 
@@ -105,8 +106,8 @@ module.exports = {
             userType: userType,
             hashPassword: passwordSha,
             isLockout: false,
-            createdOn:new Date()
-
+            createdOn:new Date(),
+            ifAuditPass:false
         }
         user.save(entity, function(err, success) {
             if (success) {
