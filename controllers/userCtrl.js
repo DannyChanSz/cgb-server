@@ -51,10 +51,13 @@ module.exports = {
             if (!isExistPhone) {
 
                 phoneTokens.verificateIdentityCode(tokens, phone, code, function(verificateSuccess) {
+
                     //测试
                     if (code == '201601') {
                         verificateSuccess = true;
                     }
+                    
+
                     //手机验证成功
                     if (verificateSuccess) {
                         //注册
@@ -65,7 +68,7 @@ module.exports = {
                                     profile = {};
                                 }
 
-                                console.info('reg', resgistResult.data._id, profile);
+                                //console.info('reg', resgistResult.data._id, profile);
 
                                 userProfileModel.addProfile(resgistResult.data._id, profile);
 
