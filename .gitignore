@@ -1,5 +1,5 @@
 node_modules
-public
+public/uploaded
 !public/
 bower_components
 .Ds_Store
