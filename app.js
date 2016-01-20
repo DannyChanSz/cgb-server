@@ -27,6 +27,7 @@ var middlewares = require('./middleware/middlewares.js');
 var userCtrl = require('./controllers/userCtrl.js');
 var orderCtrl = require('./controllers/orderCtrl.js');
 var keywordCtrl = require('./controllers/keywordCtrl.js');
+var uploadCtrl = require('./controllers/uploadCtrl.js');
 
 var ip_addr = '0.0.0.0';
 var port = '8083';
@@ -44,22 +45,28 @@ restify.CORS.ALLOW_HEADERS.push('x-app-version');
 server.use(restify.CORS());
 server.use(restify.fullResponse());
 
+
+//公共资源访问
+server.get(/public\/?.*/, restify.serveStatic({
+    directory: __dirname
+}));
+
 //版本检测
 server.use(function(req, res, next) {
 
-//console.info('somebody')
     var app_version = req.headers['x-app-version'];
     //console.log(app_version, config.app_info.app_version, app_version == config.app_info.app_version)
     if (app_version == config.app_info.app_version) {
         next();
     } else {
-        //res.headers['Access-Control-Allow-Origin'] = '*';
         res.statusCode = 403;
         res.json(config.app_info);
         res.end();
     }
 
 })
+
+
 
 server.listen(port, ip_addr, function() {
     console.log('%s listening at %s ', server.name, server.url);
@@ -145,6 +152,12 @@ server.get({
     version: '0.0.1'
 }, jwtauth, middlewares.getUserInfo, orderCtrl.getMyNewOrders);
 
+server.get({
+    path: PATH_ORDER + '/getMyNewOrders/:oldCount/:oldMaxCount/:orderState',
+    version: '0.0.1'
+}, jwtauth, middlewares.getUserInfo, orderCtrl.getMyNewOrders);
+
+
 //获取历史自身订单及其他报价状态订单(登陆权限)
 //count：要请求的数量 oldCount:当前页面记录条数 oldMaxCount:最近一次请求返回的所有记录总数
 server.get({
@@ -152,7 +165,10 @@ server.get({
     version: '0.0.1'
 }, jwtauth, middlewares.getUserInfo, orderCtrl.getMyOldOrders);
 
-
+server.get({
+    path: PATH_ORDER + '/getMyOldOrders/:count/:oldCount/:oldMaxCount/:orderState',
+    version: '0.0.1'
+}, jwtauth, middlewares.getUserInfo, orderCtrl.getMyOldOrders);
 
 
 //获取订单信息
@@ -232,3 +248,12 @@ server.post({
     path: PATH_KEYWORD + '/setKeywords',
     version: '0.0.1'
 }, jwtauth, keywordCtrl.setKeywords);
+
+
+//===文件上传路由===
+var PATH_UPLOAD = '/upload'
+//图片上传
+server.post({
+    path: PATH_UPLOAD + '/image',
+    version: '0.0.1'
+}, uploadCtrl.image);

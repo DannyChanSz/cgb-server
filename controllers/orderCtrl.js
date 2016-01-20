@@ -59,6 +59,11 @@ module.exports = {
 
         var oldCount = parseInt(req.params.oldCount);
         var oldMaxCount = parseInt(req.params.oldMaxCount);
+        var orderState = req.params.orderState;
+
+        if (!req.params.orderState || req.params.orderState == '所有') {
+            orderState = null;
+        }
 
         //订单过滤
         var orderFilter = function(orders) {
@@ -73,9 +78,10 @@ module.exports = {
         }
 
 
+
         if (userinfo.userType == '供应商') {
 
-            getSupOrderViews(userId, orderFilter, function(viewResult) {
+            getSupOrderViews(userId, orderState, orderFilter, function(viewResult) {
                 if (viewResult.status) {
                     res.json({
                         status: true,
@@ -93,7 +99,7 @@ module.exports = {
 
 
         } else {
-            getPurOrderViews(userId, orderFilter, function(viewResult) {
+            getPurOrderViews(userId, orderState, orderFilter, function(viewResult) {
                 if (viewResult.status) {
                     res.json({
                         status: true,
@@ -116,12 +122,18 @@ module.exports = {
         config.resHead(res);
         var userinfo = req.userInfo;
         var userId = userinfo._id;
+        var orderState = req.params.orderState;
+
+        if (!req.params.orderState || req.params.orderState == '所有') {
+            orderState = null;
+        }
 
         //订单过滤
         var orderFilter = function(orders) {
             var count = parseInt(req.params.count);
             var oldCount = parseInt(req.params.oldCount);
             var oldMaxCount = orders.length;
+
 
             if (req.params.oldMaxCount && req.params.oldMaxCount != '0') {
                 oldMaxCount = parseInt(req.params.oldMaxCount);
@@ -139,9 +151,10 @@ module.exports = {
 
 
 
+
         if (userinfo.userType == '供应商') {
 
-            getSupOrderViews(userId, orderFilter, function(viewResult) {
+            getSupOrderViews(userId, orderState, orderFilter, function(viewResult) {
                 if (viewResult.status) {
                     res.json({
                         status: true,
@@ -160,7 +173,7 @@ module.exports = {
 
         } else {
 
-            getPurOrderViews(userId, orderFilter, function(viewResult) {
+            getPurOrderViews(userId, orderState, orderFilter, function(viewResult) {
                 if (viewResult.status) {
                     res.json({
                         status: true,
@@ -784,17 +797,34 @@ module.exports = {
 }
 
 //获取供应商订单视图
-var getSupOrderViews = function(userId, orderFilter, done) {
+var getSupOrderViews = function(userId, state, orderFilter, done) {
     async.auto({
             getOrderBySupUserId: function(callback) {
+
+
                 orderModel.getOrderBySupUserId(userId, function(result) {
                     if (result.status) {
-                        callback(null, result.data);
+
+                        //状态筛选
+                        if (state) {
+                            var filterData = _.filter(result.data, function(item) {
+                                return item.state == state;
+                            })
+                            callback(null, filterData);
+
+                        } else {
+                            callback(null, result.data);
+                        }
+
+
                     } else {
                         callback('getOrderBySupUserId', null);
                     }
 
                 });
+
+
+
 
             },
             filterSupUserKeyWord: ['getOrderBySupUserId', function(callback, results) {
@@ -836,7 +866,7 @@ var getSupOrderViews = function(userId, orderFilter, done) {
 
                 var q = async.queue(function(order, qCallback) {
 
-  
+
                     async.auto({
                         //报价数量
                         getQuotationDetail: function(qutationDetailCallback) {
@@ -930,12 +960,22 @@ var getSupOrderViews = function(userId, orderFilter, done) {
 }
 
 //获取采购商订单视图
-var getPurOrderViews = function(userId, orderFilter, done) {
+var getPurOrderViews = function(userId, state, orderFilter, done) {
     async.auto({
             getOrderByPurUserId: function(callback) {
                 orderModel.getOrderByPurUserId(userId, function(result) {
                     if (result.status) {
-                        callback(null, result.data);
+                        //状态筛选
+                        if (state) {
+                            var filterData = _.filter(result.data, function(item) {
+                                return item.state == state;
+                            })
+                            callback(null, filterData);
+
+                        } else {
+                            callback(null, result.data);
+                        }
+
                     } else {
                         callback('getOrderByPurUserId', null);
                     }

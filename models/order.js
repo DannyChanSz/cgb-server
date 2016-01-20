@@ -1,6 +1,6 @@
 var config = require("../config/config.js");
 var strHelper = require("../tools/stringHelper.js");
-
+var _ = require("underscore");
 
 /**
  * 订单
@@ -107,6 +107,8 @@ module.exports = {
         });
 
     },
+
+
     /**
      * 获取采购商订单
      * @param  {[type]}   userId [description]
@@ -131,7 +133,6 @@ module.exports = {
             }
         });
     },
-
 
     /**
      * 订单号获取订单
