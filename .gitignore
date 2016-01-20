@@ -1,4 +1,4 @@
 node_modules
-/public/uploaded
+/public/uploaded/*
 bower_components
 .Ds_Store
