@@ -96,7 +96,7 @@ var galleryDirs = [{
 //获取相册地址
 var getGalleryDirPath = function(gallery) {
 
-    var dir = '/defualt';
+    var dir = '/default';
     _.each(galleryDirs, function(gDir) {
     	//console.info(gDir);
         if (gDir.gallery == gallery) {
