@@ -106,8 +106,8 @@ module.exports = {
             userType: userType,
             hashPassword: passwordSha,
             isLockout: false,
-            createdOn:new Date(),
-            ifAuditPass:false
+            createdOn: new Date(),
+            ifAuditPass: false
         }
         user.save(entity, function(err, success) {
             if (success) {
@@ -205,6 +205,38 @@ module.exports = {
 
 
         })
+    },
+
+
+    /**
+     * 重置密码
+     * @param  {[type]}   phone   [description]
+     * @param  {[type]}   password [description]
+     * @param  {Function} done     [description]
+     * @return {[type]}            [description]
+     */
+    resetPassword: function(phone, password, done) {
+        var hashPassword = getHashPassword(password);
+        user.update({ //更新密码
+            phone: phone
+        }, {
+            $set: {
+                hashPassword: hashPassword
+            }
+        }, function(upErr, upSuccess) {
+            if (upSuccess) {
+                done({
+                    status: true,
+                    data: upSuccess
+                });
+            } else {
+                done({
+                    status: false,
+                    err: '更新失败'
+                });
+            }
+
+        });
     }
 
 

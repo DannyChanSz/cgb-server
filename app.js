@@ -1,10 +1,5 @@
 var restify = require('restify');
-var supplier = require("./models/supplier.js");
-var category = require("./models/category.js");
-var doc = require("./models/doc.js");
-var upload = require("./models/upload.js");
-var login = require("./models/login.js");
-var register = require("./models/register.js");
+
 var jwt = require('jwt-simple')
 var moment = require('moment');
 var jwtauth = require('./models/jwtauth.js');
@@ -12,16 +7,7 @@ var config = require('./config/config.js');
 //new
 //public
 var middlewares = require('./middleware/middlewares.js');
-// var tokenContainer = new Array();
 
-// var tokenMiddle = function(req, res, done) {
-//     req.params.tokens = tokenContainer;
-//     done();
-// }
-// middlewares ={};
-// middlewares.tokenMiddle =tokenMiddle;
-// var phoneTokens = require('./models/phoneTokens.js');
-// phoneTokens.checkTokenTimeoutStar(tokenContainer);//检查过期服务
 
 //private
 var userCtrl = require('./controllers/userCtrl.js');
@@ -72,17 +58,6 @@ server.listen(port, ip_addr, function() {
     console.log('%s listening at %s ', server.name, server.url);
 });
 
-// //测试
-// server.get({
-//     path: '/appManager',
-//     version: '0.0.1'
-// }, function(req, res, next) {
-
-//     console.info(req);
-//     res.end();
-
-// });
-
 
 //路由
 
@@ -131,6 +106,21 @@ server.post({
     path: PATH_USER + '/changePassword',
     version: '0.0.1'
 }, jwtauth, userCtrl.changePassword);
+
+//检测验证码
+server.get({
+    path: PATH_USER + '/checkPhoneToken/:phone/:code',
+    version: '0.0.1'
+},  middlewares.tokenMiddle, userCtrl.checkPhoneToken);
+
+//重置密码
+//phone,code,password
+server.post({
+    path: PATH_USER + '/resetPassword',
+    version: '0.0.1'
+},  middlewares.tokenMiddle, userCtrl.resetPassword);
+
+
 
 
 //====订单路由====
@@ -252,7 +242,8 @@ server.post({
 
 //===文件上传路由===
 var PATH_UPLOAD = '/upload'
-//图片上传
+    //图片上传
+    //gallery
 server.post({
     path: PATH_UPLOAD + '/image',
     version: '0.0.1'

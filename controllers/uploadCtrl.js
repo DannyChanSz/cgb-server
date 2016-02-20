@@ -1,8 +1,9 @@
 var config = require("../config/config.js");
 var fs = require('fs');
 var async = require('async');
+var _ = require("underscore");
+var PATH = './public';
 
-var PATH = './public/uploaded/';
 
 module.exports = {
 
@@ -12,13 +13,17 @@ module.exports = {
 
         var type = req.files.file.name.split('.');
         var filename = new Date().getTime() + '.' + String(type[type.length - 1]);
+        var gallery = req.params.gallery
+        var fullPath = PATH + getGalleryDirPath(gallery);
+
+        //console.info('fullPath', fullPath);
 
         async.series([
             function(callback) {
                 //检查目录是否存在
-                fs.exists(PATH, function(exists) {
+                fs.exists(fullPath, function(exists) {
                     if (!exists) {
-                        fs.mkdir(PATH, 0777, callback);
+                        fs.mkdir(fullPath, 0777, callback);
                     } else {
                         callback();
                     }
@@ -33,7 +38,7 @@ module.exports = {
 
                 }, function(cb) {
                     //console.log('rename!');
-                    fs.exists(PATH + filename, function(exists) {
+                    fs.exists(fullPath + filename, function(exists) {
                         isNotExist = exists;
                         if (exists) {
                             filename = new Date().getTime() + '.' + String(type[type.length - 1]);
@@ -51,7 +56,7 @@ module.exports = {
             },
             function(callback) {
 
-                fs.rename(req.files.file.path, PATH + filename, function() {
+                fs.rename(req.files.file.path, fullPath + filename, function() {
                     callback();
                 });
             }
@@ -77,6 +82,26 @@ module.exports = {
 
     }
 
+}
 
+//相册地址映射
+var galleryDirs = [{
+    gallery: 'avatar',
+    dir: '/avatar/'
+}, {
+    gallery: 'certificate',
+    dir: '/certificate/'
+}]
 
+//获取相册地址
+var getGalleryDirPath = function(gallery) {
+
+    var dir = '/defualt';
+    _.each(galleryDirs, function(gDir) {
+    	//console.info(gDir);
+        if (gDir.gallery == gallery) {
+            dir = gDir.dir;
+        }
+    })
+    return dir;
 }

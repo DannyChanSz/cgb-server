@@ -5,6 +5,8 @@ var sms = require("../plugin/sms/sms.js");
 var config = require("../config/config.js");
 var moment = require('moment');
 var jwt = require('jwt-simple');
+var async = require("async");
+
 
 
 module.exports = {
@@ -51,12 +53,6 @@ module.exports = {
             if (!isExistPhone) {
 
                 phoneTokens.verificateIdentityCode(tokens, phone, code, function(verificateSuccess) {
-
-                    //测试
-                    if (code == '201601') {
-                        verificateSuccess = true;
-                    }
-                    
 
                     //手机验证成功
                     if (verificateSuccess) {
@@ -124,14 +120,14 @@ module.exports = {
                     expires: expires,
                     user: loginResult.data
                 });
-                return next();
+                res.end()
 
             } else {
                 res.json({
                     status: false,
                     errMsg: '用户名或密码不存在'
                 });
-                return next();
+                res.end();
             }
         })
 
@@ -191,7 +187,6 @@ module.exports = {
 
         })
 
-
     },
     //修改密码
     changePassword: function(req, res, done) {
@@ -215,6 +210,102 @@ module.exports = {
 
 
         })
+
+    },
+    //检测手机验证码
+    checkPhoneToken: function(req, res, done) {
+        config.resHead(res);
+
+        var tokens = req.params.tokens;
+        var phone = req.params.phone;
+        var code = req.params.code;
+
+        async.series([function(callback) {
+
+            phoneTokens.verificateIdentityCode(tokens, phone, code, function(verificateSuccess) {
+
+                if (verificateSuccess) {
+                    callback();
+                } else {
+                    callback('请填写正确的验证码')
+                }
+            });
+
+        }], function(err, values) {
+            if (!err) {
+                res.json({
+                    status: true,
+                });
+                res.end();
+            } else {
+                res.json({
+                    status: false,
+                    errMsg: err
+                });
+                res.end();
+            }
+        })
+    },
+    //重置密码
+    resetPassword: function(req, res, done) {
+
+        config.resHead(res);
+
+        var tokens = req.params.tokens;
+        var phone = req.params.phone;
+        var code = req.params.code;
+        var password = req.params.password;
+
+
+        async.series([function(callback) {
+            userModel.checkPhone(phone, function(isExistPhone) {
+                if (isExistPhone) {
+                    callback();
+                } else {
+                    callback('手机号码不存在')
+                }
+            });
+        }, function(callback) {
+
+            phoneTokens.verificateIdentityCode(tokens, phone, code, function(verificateSuccess) {
+
+                if (verificateSuccess) {
+                    callback();
+                } else {
+                    callback('请填写正确的验证码')
+                }
+            });
+
+        }, function(callback) {
+
+            userModel.resetPassword(phone, password, function(result) {
+
+                if (result.status) {
+                    callback();
+                } else {
+                    callback('修改密码错误')
+                }
+
+            })
+
+        }], function(err, values) {
+            if (!err) {
+                res.json({
+                    status: true,
+                    data: values[2]
+                });
+                res.end();
+            } else {
+                res.json({
+                    status: false,
+                    errMsg: err
+                });
+                res.end();
+            }
+        })
+
+
+
 
     }
 
