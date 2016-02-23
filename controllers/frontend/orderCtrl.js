@@ -1,10 +1,10 @@
-var config = require("../config/config.js");
-var orderModel = require("../models/order.js");
-var userModel = require("../models/user.js");
-var userProfileModel = require("../models/userProfile.js");
-var quotationModel = require("../models/quotation.js");
-var logisticsModel = require("../models/logistics.js");
-var keywordModel = require("../models/keyword.js");
+var config = require("../../config/config.js");
+var orderModel = require("../../models/order.js");
+var userModel = require("../../models/user.js");
+var userProfileModel = require("../../models/userProfile.js");
+var quotationModel = require("../../models/quotation.js");
+var logisticsModel = require("../../models/logistics.js");
+var keywordModel = require("../../models/keyword.js");
 var _ = require("underscore");
 var async = require("async");
 

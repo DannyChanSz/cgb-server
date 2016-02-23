@@ -1,5 +1,5 @@
-var config = require("../config/config.js");
-var keywordModel = require("../models/keyword.js");
+var config = require("../../config/config.js");
+var keywordModel = require("../../models/keyword.js");
 var _ = require("underscore");
 
 module.exports = {

@@ -22,6 +22,7 @@ module.exports = {
      * @return {[type]}         [description]
      */
     getByUserId: function(userId, done) {
+
         var objUserId = config.mongojs.ObjectId(userId)
 
         async.parallel({
@@ -222,6 +223,38 @@ module.exports = {
         }, {
             $set: {
                 hashPassword: hashPassword
+            }
+        }, function(upErr, upSuccess) {
+            if (upSuccess) {
+                done({
+                    status: true,
+                    data: upSuccess
+                });
+            } else {
+                done({
+                    status: false,
+                    err: '更新失败'
+                });
+            }
+
+        });
+    },
+
+    /**
+     * 修改审核状态
+     * @param  {[type]}   userId      [description]
+     * @param  {[type]}   ifAuditPass [description]
+     * @param  {Function} done        [description]
+     * @return {[type]}               [description]
+     */
+    changeAudit: function(userId, ifAuditPass, done) {
+
+        var objUserId = config.mongojs.ObjectId(userId)
+        user.update({
+            _id: objUserId
+        }, {
+            $set: {
+                ifAuditPass: ifAuditPass
             }
         }, function(upErr, upSuccess) {
             if (upSuccess) {

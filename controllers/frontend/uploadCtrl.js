@@ -1,8 +1,8 @@
-var config = require("../config/config.js");
+var config = require("../../config/config.js");
 var fs = require('fs');
 var async = require('async');
 var _ = require("underscore");
-var PATH = './public';
+var PATH = './public';//相当于app.js路径
 
 
 module.exports = {
