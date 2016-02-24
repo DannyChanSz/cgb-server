@@ -63,6 +63,16 @@ module.exports = function(modelName) {
     };
 
     /**
+     * id查询
+     * @param  {[type]}   id   [description]
+     * @param  {Function} done [description]
+     * @return {[type]}        [description]
+     */
+    this.findById = function(id, done) {
+        db.findOne({ _id: config.mongojs.ObjectId(id) }, _.partial(this.defaultCall, _, _, done));
+    }
+
+    /**
      * 更新
      * @param  {[type]}   filter [description]
      * @param  {[type]}   entity [description]
@@ -101,5 +111,15 @@ module.exports = function(modelName) {
     this.remove = function(filter, done) {
         db.remove(filter, _.partial(this.defaultCall, _, _, done));
     };
+
+    /**
+     * id删除
+     * @param  {[type]}   id   [description]
+     * @param  {Function} done [description]
+     * @return {[type]}        [description]
+     */
+    this.removeById = function(id, done) {
+        db.remove({ _id: config.mongojs.ObjectId(id) }, _.partial(this.defaultCall, _, _, done));
+    }
 
 }
