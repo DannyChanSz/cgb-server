@@ -215,7 +215,6 @@ module.exports = {
     //检测手机验证码
     checkPhoneToken: function(req, res, done) {
         config.resHead(res);
-
         var tokens = req.params.tokens;
         var phone = req.params.phone;
         var code = req.params.code;
