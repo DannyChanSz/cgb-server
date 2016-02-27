@@ -23,23 +23,6 @@ server.listen(port, ip_addr, function() {
 });
 
 
-
-
-// server.get({
-//     path: '/test/:id:name'
-// }, function(req,res,done){
-// 	console.log('ok')
-// 	res.end('ok!')
-// });
-
-
-server.get(
-     /^\/test\/:id:name/
-, function(req,res,done){
-	console.log('ok')
-	res.end('ok!')
-});
-
 //路由
 require('./routes/index.js')(server, restify, __dirname);
 

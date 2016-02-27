@@ -38,7 +38,9 @@ module.exports = function(server, restify, rootDirName) {
      */
     require('./backend/order.js')(server);
 
-
+    /**
+     * 添加query访问方式路由
+     */
     creatRedirectRoutes(server);
 }
 
@@ -85,9 +87,9 @@ function creatRedirectRoutes(server) {
  * 生成实际路由地址
  * 源自restify/lib/router.js
  * 如: path='／foo/:id/:name' params={id:1,name:2} return /foo/1/2
- * @param  {[type]} path   [description]
- * @param  {[type]} params [description]
- * @return {[type]}        [description]
+ * @param  {[type]} path   [route path]
+ * @param  {[type]} params [route params]
+ * @return {[type]}        [redirect url]
  */
 function render(path, params) {
 
