@@ -26,6 +26,12 @@ module.exports = {
     },
     admin: function() {
         return inheritClone(base, 'admin');
+    },
+    role: function() {
+        return inheritClone(base, 'role');
+    },
+    adminRole: function() {
+        return inheritClone(base, 'adminRole');
     }
 
 }
