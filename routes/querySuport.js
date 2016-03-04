@@ -66,7 +66,7 @@ function render(path, params) {
 
     function pathItem(match, key) {
         if (params.hasOwnProperty(key) === false) {
-            throw new Error('Route <' + routeName +
+            throw new Error('Route <' + path +
                 '> is missing parameter <' +
                 key + '>');
         }

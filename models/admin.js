@@ -18,7 +18,12 @@ var MAX_QUEUE = 5;
  */
 module.exports = {
 
-
+    /**
+     * 用户名检查
+     * @param  {[type]}   userName [description]
+     * @param  {Function} done     [description]
+     * @return {[type]}            [description]
+     */
     checkUserName: function(userName, done) {
 
         admin.findOne({ userName: userName }, _.partial(help.defaultCall, _, _, done))
@@ -68,7 +73,7 @@ module.exports = {
 
     },
     /**
-     * [getAdminInfos description]
+     * 完整用户信息
      * @return {[type]} [description]
      */
     getCompletelyInfos: function(userName, done) {
@@ -146,6 +151,22 @@ module.exports = {
 
         })
 
+    },
+    /**
+     * 登陆
+     * @param  {[type]}   userName [description]
+     * @param  {[type]}   password [description]
+     * @param  {Function} done     [description]
+     * @return {[type]}            [description]
+     */
+    login: function(userName, password, done) {
+
+        var passwordSha = help.getHashPassword(password);
+
+        admin.findOne({
+            userName: userName,
+            hashPassword: passwordSha
+        }, _.partial(help.defaultCall, _, _, done));
 
     }
 

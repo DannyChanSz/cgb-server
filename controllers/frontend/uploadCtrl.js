@@ -9,6 +9,7 @@ module.exports = {
 
     image: function(req, res, done) {
 
+
         config.resHead(res);
 
         var type = req.files.file.name.split('.');

@@ -40,14 +40,24 @@ module.exports = function(server, restify, rootDirName) {
 
 
     /**
+     * 路由访问控制
+     */
+    require('./backend/access.js')(server);
+
+
+    /**-------全局配置-------**/
+
+    /**
      * 支持query方式访问
      */
     require('./querySuport.js')(server);
 
+
+
     /**
-     * 权限过滤
+     * 全局访问控制
      */
-    require('./auth.js')(server);
+    require('./access.js')(server);
 
 
 }

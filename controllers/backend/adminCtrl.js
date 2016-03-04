@@ -1,5 +1,6 @@
 var async = require('async');
 var adminModel = require('../../models/context.js').admin();
+var _ =require('underscore');
 
 /**
  * 管理员账号管理
@@ -111,9 +112,21 @@ module.exports = {
         var userName = req.params.userName;
 
         adminModel.getCompletelyInfos(userName, function(result) {
-        	res.json(result);
-        	res.end();
+            res.json(result);
+            res.end();
         })
+
+    },
+    /**
+     * 登陆
+     * @param  {[type]}   req  [description]
+     * @param  {[type]}   res  [description]
+     * @param  {Function} done [description]
+     * @return {[type]}        [description]
+     */
+    login: function(req, res, done) {
+
+
 
 
     }

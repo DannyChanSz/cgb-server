@@ -16,7 +16,6 @@ module.exports = {
      * @return {[type]}        [description]
      */
     findAll: function(req, res, done) {
-
         user.findAll({}, function(result) {
             res.json(result)
             res.end();

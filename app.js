@@ -26,3 +26,4 @@ server.listen(port, ip_addr, function() {
 //路由
 require('./routes/index.js')(server, restify, __dirname);
 
+
