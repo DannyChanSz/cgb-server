@@ -12,13 +12,13 @@ var adminRole = config.db.collection("adminRole");
  */
 module.exports = {
 
-	/**
-	 * 添加
-	 * @param  {[type]}   adminId [description]
-	 * @param  {[type]}   roleId  [description]
-	 * @param  {Function} done    [description]
-	 * @return {[type]}           [description]
-	 */
+    /**
+     * 添加
+     * @param  {[type]}   adminId [description]
+     * @param  {[type]}   roleId  [description]
+     * @param  {Function} done    [description]
+     * @return {[type]}           [description]
+     */
     create: function(adminId, roleId, done) {
         var objAdminId = config.mongojs.ObjectId(adminId);
         var objRoleId = config.mongojs.ObjectId(roleId);
@@ -28,10 +28,23 @@ module.exports = {
             roleId: objRoleId
         }
 
-        adminRole.update(entity,{
+        adminRole.update(entity, {
             $set: entity
         }, {
             upsert: true
+        }, _.partial(help.defaultCall, _, _, done));
+    },
+    /**
+     * 删除管理员角色关系
+     * @param  {[type]}   adminId [description]
+     * @param  {Function} done    [description]
+     * @return {[type]}           [description]
+     */
+    removeByAdminId: function(adminId, done) {
+        var objAdminId = config.mongojs.ObjectId(adminId);
+        
+        adminRole.remove({
+            adminId: objAdminId
         }, _.partial(help.defaultCall, _, _, done));
     }
 

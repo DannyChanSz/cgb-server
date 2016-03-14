@@ -15,12 +15,29 @@ module.exports = function(server) {
     var PATH_ADMIN = '/backend/admin';
 
     /**
+     * 获取管理员列表
+     */
+    server.get({
+        path: PATH_ADMIN + '/findAll',
+        version: '0.0.1'
+    }, adminCtrl.findAll);
+
+    /**
      * 获取完整管理员信息
      */
     server.get({
-        path: PATH_ADMIN + '/getCompletelyInfos/:userName',
+        path: PATH_ADMIN + '/getCompletelyInfos/:id',
         version: '0.0.1'
     }, adminCtrl.getCompletelyInfos);
+
+
+    /**
+     * 菜单权限
+     */
+    server.get({
+        path: PATH_ADMIN + '/getMenuList/:userName',
+        version: '0.0.1'
+    }, adminCtrl.getMenuList);
 
     /**
      * 新增管理员
@@ -66,6 +83,15 @@ module.exports = function(server) {
     }, roleCtrl.findAll);
 
     /**
+     * 角色详细
+     */
+    server.get({
+        path: PATH_ROLE + '/findOne/:id',
+        version: '0.0.1'
+    }, roleCtrl.findOne);
+
+
+    /**
      * 添加角色
      * name
      */
@@ -76,33 +102,64 @@ module.exports = function(server) {
 
     /**
      * 设置接口权限
-     * id,inferfaceList(['',''])
+     * id,interfaceList(['',''])
      */
     server.post({
         path: PATH_ROLE + '/setInterfaceList',
         version: '0.0.1'
     }, roleCtrl.setInterfaceList);
 
+    /**
+     * 设置目录权限
+     * id,menuList
+     * 其中menuList格式
+     *     [{
+     *          title: '会员管理'
+     *          items: [{ title: '会员列表', path: '/user' }]
+     *      }, {
+     *          title: '权限管理',
+     *          items: [
+     *              { title: '管理员管理', path: '/admin' },
+     *              { title: '角色管理', path: '/role' }
+     *          ]
+     *      }]
+     */
+    server.post({
+        path: PATH_ROLE + '/setMenuList',
+        version: '0.0.1'
+    }, roleCtrl.setMenuList);
+
+
 
     /*------------权限-----------*/
     var PATH_ADMIN_ROLE = '/backend/adminRole';
 
-    /**
-     * 添加权限（管理员角色关系）
-     * adminId,roleId
-     */
-    server.post({
-        path: PATH_ADMIN_ROLE + '/create',
-        version: '0.0.1'
-    }, adminRoleCtrl.create);
+    // /**
+    //  * 添加权限（管理员角色关系）
+    //  * adminId,roleId
+    //  */
+    // server.post({
+    //     path: PATH_ADMIN_ROLE + '/create',
+    //     version: '0.0.1'
+    // }, adminRoleCtrl.create);
+
+    // /**
+    //  * 删除权限
+    //  * id
+    //  */
+    // server.post({
+    //     path: PATH_ADMIN_ROLE + '/remove',
+    //     version: '0.0.1'
+    // }, adminRoleCtrl.remove);
 
     /**
-     * 删除权限
-     * id
+     * 设置管理员角色关系
+     * adminId,roles([roleId,roleId])
      */
     server.post({
-        path: PATH_ADMIN_ROLE + '/remove',
+        path: PATH_ADMIN_ROLE + '/upsert',
         version: '0.0.1'
-    }, adminRoleCtrl.remove);
+    }, adminRoleCtrl.upsert);
+
 
 }

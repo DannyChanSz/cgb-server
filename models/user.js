@@ -51,9 +51,12 @@ module.exports = {
             }
         }, function(err, results) {
             if (!err) {
-                //console.log('results',results)
+
                 var user = results.getUser;
-                user.userProfile = results.getProfile;
+                if (results.getProfile) {
+                    user.userProfile = results.getProfile;
+                }
+
                 done({
                     status: true,
                     data: user

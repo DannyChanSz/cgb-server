@@ -163,9 +163,39 @@ module.exports = {
 
         var passwordSha = help.getHashPassword(password);
 
+
         admin.findOne({
             userName: userName,
             hashPassword: passwordSha
+        }, _.partial(help.defaultCall, _, _, done));
+
+    },
+    /**
+     * 设置
+     * @param  {[type]}   userName [description]
+     * @param  {[type]}   password [description]
+     * @param  {Function} done     [description]
+     * @return {[type]}            [description]
+     */
+    upsert: function(userName, password, done) {
+
+        var filter = {
+            userName: userName
+        };
+
+        var passwordSha = help.getHashPassword(password);
+                console.log(userName, password, passwordSha);
+        var entity = {
+            userName: userName,
+            hashPassword: passwordSha,
+            isLockout: false,
+            createdOn: new Date()
+        }
+
+        admin.update(filter, {
+            $set: entity
+        }, {
+            upsert: true
         }, _.partial(help.defaultCall, _, _, done));
 
     }

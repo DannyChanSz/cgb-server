@@ -1,13 +1,27 @@
 var async = require('async');
 var adminModel = require('../../models/context.js').admin();
-var _ =require('underscore');
+var _ = require('underscore');
 
 /**
  * 管理员账号管理
  * @type {Object}
  */
 module.exports = {
+    /**
+     * 管理员列表
+     * @param  {[type]}   req  [description]
+     * @param  {[type]}   res  [description]
+     * @param  {Function} done [description]
+     * @return {[type]}        [description]
+     */
+    findAll: function(req, res, done) {
 
+        adminModel.findAll({}, function(result) {
+            res.json(result);
+            res.end();
+        })
+
+    },
 
     /**
      * 添加管理员帐号
@@ -109,24 +123,88 @@ module.exports = {
      */
     getCompletelyInfos: function(req, res, done) {
 
-        var userName = req.params.userName;
+        var id = req.params.id;
 
-        adminModel.getCompletelyInfos(userName, function(result) {
-            res.json(result);
-            res.end();
+        async.auto({
+            findAdmin: function(callback) {
+
+                adminModel.findById(id, function(result) {
+                    if (result.status) {
+                        callback(null, result.data);
+                    } else {
+                        callback('findAdmin');
+                    }
+                })
+
+            },
+            getCompletelyInfos: ['findAdmin', function(callback, results) {
+
+                var admin = results.findAdmin;
+                adminModel.getCompletelyInfos(admin.userName, function(result) {
+                    if (result.status) {
+                        callback(null, result.data);
+                    } else {
+                        callback('getCompletelyInfos');
+                    }
+                })
+
+            }]
+        }, function(err, results) {
+            if (!err) {
+                res.json({
+                    status: true,
+                    data: results.getCompletelyInfos
+                })
+                res.end();
+            } else {
+                res.json({
+                    status: false,
+                    errMsg: err
+                })
+                res.end();
+            }
+
         })
+
 
     },
     /**
-     * 登陆
+     * [getMenuList description]
      * @param  {[type]}   req  [description]
      * @param  {[type]}   res  [description]
      * @param  {Function} done [description]
      * @return {[type]}        [description]
      */
-    login: function(req, res, done) {
+    getMenuList: function(req, res, done) {
+
+        var userName = req.params.userName;
+
+        adminModel.getCompletelyInfos(userName, function(result) {
+            if (result.status) {
+
+                var roles = result.data.role;
+                var menus = [];
+
+                _.each(roles, function(e, i, l) {
+                    menus = _.union(e.menuList, menus);
+                })
 
 
+                res.json({
+                    status: true,
+                    data: menus
+                });
+                res.end();
+
+            } else {
+                res.json({
+                    status: false,
+                    errMsg: result.errMsg
+                });
+                res.end();
+            }
+
+        })
 
 
     }

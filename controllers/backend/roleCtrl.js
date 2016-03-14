@@ -32,7 +32,8 @@ module.exports = {
             create: ['checkName', function(callback, results) {
                 roleModel.create({
                     name: name,
-                    inferfaceList: []
+                    interfaceList: [],
+                    menuList: []
                 }, function(result) {
                     if (result.status) {
                         callback(null, result.data);
@@ -87,20 +88,60 @@ module.exports = {
     setInterfaceList: function(req, res, done) {
 
         var id = req.params.id;
-        var inferfaceList = req.params.inferfaceList;
+        var interfaceList = req.params.interfaceList;
 
-        if (!(_.isArray(inferfaceList))) {
-            inferfaceList = [];
+        if (!(_.isArray(interfaceList))) {
+            interfaceList = [];
         }
 
-        roleModel.setInterfaceList(id, inferfaceList, function(result) {
+        roleModel.setInterfaceList(id, interfaceList, function(result) {
 
             res.json(result);
             re.end();
         })
 
-    }
+    },
+    /**
+     * 设置目录权限
+     * @param {[type]}   req  [description]
+     * @param {[type]}   res  [description]
+     * @param {Function} done [description]
+     */
+    setMenuList: function(req, res, done) {
 
+        var id = req.params.id;
+        var menuList = req.params.menuList;
+
+        if (!(_.isArray(menuList))) {
+            menuList = [];
+        }
+
+        roleModel.setMenuList(id, menuList, function(result) {
+
+            res.json(result);
+            re.end();
+        })
+
+
+    },
+    /**
+     * [findOne description]
+
+     * @param  {[type]}   req  [description]
+     * @param  {[type]}   res  [description]
+     * @param  {Function} done [description]
+     * @return {[type]}        [description]
+     */
+    findOne: function(req, res, done) {
+        var id = req.params.id;
+
+        roleModel.findById(id, function(result) {
+            res.json(result);
+            res.end();
+        })
+
+
+    }
 
 
 

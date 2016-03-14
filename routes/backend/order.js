@@ -22,6 +22,14 @@ module.exports = function(server) {
     }, orderCtrl.findAll);
 
     /**
+     * 获取订单所有报价
+     */
+    server.get({
+        path: PATH + '/getOrder/:orderId',
+        version: '0.0.1'
+    }, orderCtrl.getOrder);
+
+    /**
      * 修改订单状态（修改条件：已发货->已完成 或 报价/待支付->已关闭）
      * orderId,state
      */
@@ -29,6 +37,8 @@ module.exports = function(server) {
         path: PATH + '/changeOrderState',
         version: '0.0.1'
     }, orderCtrl.changeState);
+
+
 
 
 

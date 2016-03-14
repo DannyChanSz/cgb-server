@@ -8,7 +8,7 @@ var role = config.db.collection("role");
 
 /**
  * 角色管理
- * id,name,inferfaceList
+ * id,name,interfaceList,menuList
  */
 module.exports = {
 
@@ -26,13 +26,33 @@ module.exports = {
     /**
      * 角色接口权限
      * @param {[type]}   id            [description]
-     * @param {[type]}   inferfaceList [description]
+     * @param {[type]}   interfaceList [description]
      * @param {Function} done          [description]
      */
-    setInterfaceList: function(id, inferfaceList, done) {
+    setInterfaceList: function(id, interfaceList, done) {
 
         var entity = {
-            inferfaceList: inferfaceList
+            interfaceList: interfaceList
+        };
+
+        role.update({
+            _id: config.mongojs.ObjectId(id)
+        }, {
+            $set: entity
+        }, _.partial(help.defaultCall, _, _, done));
+
+    },
+
+    /**
+     * 角色菜单权限
+     * @param {[type]}   id       [description]
+     * @param {[type]}   menuList [description]
+     * @param {Function} done     [description]
+     */
+    setMenuList: function(id, menuList, done) {
+
+        var entity = {
+            menuList: menuList
         };
 
         role.update({
@@ -42,10 +62,6 @@ module.exports = {
         }, _.partial(help.defaultCall, _, _, done));
 
     }
-
-
-
-
 
 
 

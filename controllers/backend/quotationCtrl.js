@@ -39,7 +39,7 @@ module.exports = {
                     })
                 },
                 getQutationsUserInfo: ['getQutations', function(callback, results) {
-    
+        
                         var quosWithUser = new Array();
 
                         var quotations = results.getQutations;
@@ -112,7 +112,7 @@ module.exports = {
                     if (result.status) {
                         callback(null, result.data);
                     } else {
-                        callback('getQutation')
+                        callback('无此询价单')
                     }
 
                 })
@@ -123,7 +123,7 @@ module.exports = {
                 orderModel.findById(orderId, function(result) {
                     if (result.status) {
                         var order = result.data;
-
+         
                         if (order.state == '报价') {
                             callback(null, result.data);
                         } else {
@@ -131,7 +131,7 @@ module.exports = {
                         }
 
                     } else {
-                        callback('getQutation')
+                        callback('findById')
                     }
                 })
 

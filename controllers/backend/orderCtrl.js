@@ -1,5 +1,5 @@
-var _ = require("underscore");
-
+var _ = require('underscore');
+var async = require('async');
 
 var orderModel = require('../../models/context.js').order();
 
@@ -67,11 +67,12 @@ module.exports = {
                         callback();
                     } else if (state == '已关闭' && (order.state == '报价' || order.state == '待支付')) {
                         callback();
+                    } else {
+                        callback('无权修改该订单');
                     }
 
-                    callback('无权修改该订单');
 
-
+ 
                 }],
                 changeOrderState: ['checkChangeAuth', function(callback, results) {
 
@@ -112,6 +113,24 @@ module.exports = {
                 errMsg: '不支持该修改操作'
             })
         }
+
+
+    },
+    /**
+     * 获取订单记录
+     * @param  {[type]}   req  [description]
+     * @param  {[type]}   res  [description]
+     * @param  {Function} done [description]
+     * @return {[type]}        [description]
+     */
+    getOrder: function(req, res, done) {
+
+        var id = req.params.orderId;
+        console.log(id);
+        orderModel.findById(id, function(result) {
+            res.json(result);
+            res.end();
+        })
 
 
     }

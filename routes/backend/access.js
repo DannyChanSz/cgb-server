@@ -24,30 +24,63 @@ module.exports = function(server) {
      * 获取后台接口
      */
     server.get({
-        path: PATH + '/getAllInferfaces',
+        path: PATH + '/getAllInterfaces',
         version: '0.0.1'
     }, function(req, res, done) {
 
-        var inferfaces = [];
-        server.router.routes.GET.forEach(function(route) {
-            var path = {
-                method: 'get',
-                route: route.spec.path.toString()
-            }
-            inferfaces.push(path);
-            inferfaces = _.sortBy(inferfaces, 'route');
+        var interfaces = getInterfaces(server);
+        res.json({
+            status: true,
+            data: interfaces
         });
-
-        server.router.routes.POST.forEach(function(route) {
-            var path = {
-                method: 'post',
-                route: route.spec.path.toString()
-            }
-            inferfaces.push(path);
-        });
-
-        res.json(inferfaces);
         res.end();
     });
 
+
+    /**
+     * 重置管理员权限
+     * @param  {[type]} req   [description]
+     * @param  {[type]} res   [description]
+     * @param  {[type]} done) {               } [description]
+     * @return {[type]}       [description]
+     */
+    server.post({
+        path: PATH + '/resetSystemAdmin',
+        version: '0.0.1'
+    }, function(req, res, done) {
+
+        var interfaces = getInterfaces(server);
+
+        accessCtrl.resetSystemAdmin(req, res, interfaces, done);
+
+    });
+
+
+}
+
+/**
+ * 获取接口
+ * @param  {[type]} server [description]
+ * @return {[type]}        [description]
+ */
+function getInterfaces(server) {
+    var interfaces = [];
+    server.router.routes.GET.forEach(function(route) {
+        var path = {
+            method: 'get',
+            route: route.spec.path.toString()
+        }
+        interfaces.push(path);
+        interfaces = _.sortBy(interfaces, 'route');
+    });
+
+    server.router.routes.POST.forEach(function(route) {
+        var path = {
+            method: 'post',
+            route: route.spec.path.toString()
+        }
+        interfaces.push(path);
+    });
+
+    return interfaces;
 }

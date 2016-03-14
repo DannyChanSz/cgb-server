@@ -1,5 +1,6 @@
 var config = require("../config/config.js");
 var _ = require("underscore");
+var help = require('./help.js');
 
 /**
  * 基础类
@@ -11,34 +12,13 @@ module.exports = function(modelName) {
     var db = config.db.collection(modelName);
 
     /**
-     * 默认返回方法
-     * @param  {[type]}   err     [description]
-     * @param  {[type]}   success [description]
-     * @param  {Function} done    [description]
-     * @return {[type]}           [description]
-     */
-    this.defaultCall = function(err, success, done) {
-        if (!err) {
-            return done({
-                status: true,
-                data: success
-            });
-        } else {
-            return done({
-                status: false,
-                data: err
-            });
-        }
-    };
-
-    /**
      * 新增
      * @param  {[type]}   entity [description]
      * @param  {Function} done   [description]
      * @return {[type]}          [description]
      */
     this.create = function(entity, done) {
-        db.insert(entity, _.partial(this.defaultCall, _, _, done));
+        db.insert(entity, _.partial(help.defaultCall, _, _, done));
     };
 
     /**
@@ -49,7 +29,7 @@ module.exports = function(modelName) {
      */
     this.findAll = function(filter, done) {
 
-        db.find(filter, _.partial(this.defaultCall, _, _, done));
+        db.find(filter, _.partial(help.defaultCall, _, _, done));
     };
 
     /**
@@ -59,7 +39,7 @@ module.exports = function(modelName) {
      * @return {[type]}          [description]
      */
     this.findOne = function(filter, done) {
-        db.findOne(filter, _.partial(this.defaultCall, _, _, done));
+        db.findOne(filter, _.partial(help.defaultCall, _, _, done));
     };
 
     /**
@@ -69,7 +49,7 @@ module.exports = function(modelName) {
      * @return {[type]}        [description]
      */
     this.findById = function(id, done) {
-        db.findOne({ _id: config.mongojs.ObjectId(id) }, _.partial(this.defaultCall, _, _, done));
+        db.findOne({ _id: config.mongojs.ObjectId(id) }, _.partial(help.defaultCall, _, _, done));
     }
 
     /**
@@ -82,7 +62,7 @@ module.exports = function(modelName) {
     this.update = function(filter, entity, done) {
         db.update(filter, {
             $set: entity
-        }, _.partial(this.defaultCall, _, _, done));
+        }, _.partial(help.defaultCall, _, _, done));
     };
 
 
@@ -99,7 +79,7 @@ module.exports = function(modelName) {
             $set: entity
         }, {
             upsert: true
-        }, _.partial(this.defaultCall, _, _, done));
+        }, _.partial(help.defaultCall, _, _, done));
     };
 
     /**
@@ -109,7 +89,7 @@ module.exports = function(modelName) {
      * @return {[type]}          [description]
      */
     this.remove = function(filter, done) {
-        db.remove(filter, _.partial(this.defaultCall, _, _, done));
+        db.remove(filter, _.partial(help.defaultCall, _, _, done));
     };
 
     /**
@@ -119,7 +99,7 @@ module.exports = function(modelName) {
      * @return {[type]}        [description]
      */
     this.removeById = function(id, done) {
-        db.remove({ _id: config.mongojs.ObjectId(id) }, _.partial(this.defaultCall, _, _, done));
+        db.remove({ _id: config.mongojs.ObjectId(id) }, _.partial(help.defaultCall, _, _, done));
     }
 
 }

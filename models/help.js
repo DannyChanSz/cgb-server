@@ -4,7 +4,7 @@ var crypto = require('crypto');
 module.exports = {
 
     defaultCall: function(err, success, done) {
-        if (!err) {
+        if (success) {
             return done({
                 status: true,
                 data: success
@@ -12,7 +12,7 @@ module.exports = {
         } else {
             return done({
                 status: false,
-                data: err
+                errMsg: err
             });
         }
     },
