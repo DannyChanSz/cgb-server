@@ -69,11 +69,10 @@ module.exports = {
 
         if (token) {
             try {
-
                 var decoded = jwt.decode(token, config.jwtTokenSecret);
 
                 if (decoded.exp <= Date.now()) {
-
+                    console.log('401 登录已超时')
                     res.send(401, { message: '登录已超时' })
                     res.end()
                 }
@@ -104,7 +103,7 @@ module.exports = {
                 });
 
             } catch (err) {
-                res.send(401, { message: err })
+                res.send(401, { message: 'catch err :' + err })
                 res.end()
             }
         } else {

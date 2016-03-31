@@ -120,6 +120,7 @@ module.exports = {
     //获取历史订单列表[待添加权限]
     getMyOldOrders: function(req, res, done) {
         config.resHead(res);
+        console.log(req.userInfo)
         var userinfo = req.userInfo;
         var userId = userinfo._id;
         var orderState = req.params.orderState;

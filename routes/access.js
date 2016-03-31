@@ -22,7 +22,7 @@ module.exports = function(server) {
     whitelist.push('/backend/access/getAllInterfaces');
     //重置管理员权限
     whitelist.push('/backend/access/resetSystemAdmin');
-    
+
 
 
     /**
@@ -32,7 +32,7 @@ module.exports = function(server) {
      * @param  {[type]} done  [description]
      * @return {[type]}       [description]
      */
-    server.pre(function(req, res, done) {
+    server.use(function(req, res, done) {
 
         if (req.getPath().indexOf('/backend') == 0) {
             //接口权限控制
@@ -40,13 +40,16 @@ module.exports = function(server) {
 
                 var r = currentRoute ? currentRoute.name : null;
                 if (!err) {
+                    //console.log(currentRoute);
                     if (r == 'preflight') { //options请求
-                        //res.writeHeader(200);
+                        // console.log('options请求')
+                        res.writeHeader(200);
                         res.end();
                     }
                     if (r != 'preflight' && _.indexOf(whitelist, currentRoute.spec.path) == -1) { //白名单以外
-
+      
                         accessCtrl.getWhiteList(req, res, function(interfaces) { //用户权限以外
+             
                             //console.log(interfaces,(_.indexOf(interfaces, currentRoute.spec.path)>-1))
                             if (_.indexOf(interfaces, currentRoute.spec.path) > -1) {
                                 done();
@@ -55,9 +58,7 @@ module.exports = function(server) {
                                 res.end();
                             }
                         })
-                    }
-                    else
-                    {
+                    } else {
                         done();
                     }
 
@@ -65,11 +66,9 @@ module.exports = function(server) {
                     res.send(err);
                     res.end();
                 }
-                
+
             })
-        }
-        else
-        {
+        } else {
             done();
         }
 

@@ -10,6 +10,10 @@ module.exports = function(server, restify, rootDirName) {
         directory: rootDirName
     }));
 
+    /**
+     * 全局访问控制
+     */
+    require('./access.js')(server);
 
     /**-------前台路由-------**/
 
@@ -54,10 +58,6 @@ module.exports = function(server, restify, rootDirName) {
 
 
 
-    /**
-     * 全局访问控制
-     */
-    require('./access.js')(server);
 
 
 }

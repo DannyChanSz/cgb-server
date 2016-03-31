@@ -22,7 +22,6 @@ module.exports = {
             var userId = req.userId;
 
             userModel.getByUserId(userId, function(getResult) {
-
                 if (getResult.status) {
 
                     req.userInfo = getResult.data;
