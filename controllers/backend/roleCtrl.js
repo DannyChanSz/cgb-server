@@ -22,7 +22,7 @@ module.exports = {
         async.auto({
             checkName: function(callback) {
                 roleModel.checkName(name, function(result) {
-                    if (result.status && (!result.data)) {
+                    if (!result.data) {
                         callback();
                     } else {
                         callback('角色名已存在');

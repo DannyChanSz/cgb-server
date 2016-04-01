@@ -39,8 +39,8 @@ module.exports = {
             checkUserName: function(callback) {
 
                 adminModel.checkUserName(userName, function(result) {
-
-                    if (result.status && (!result.data)) {
+                    console.log(result);
+                    if (!result.status ) {
                         callback()
                     } else {
                         callback('用户名已存在');

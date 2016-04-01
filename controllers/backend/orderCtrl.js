@@ -43,6 +43,7 @@ module.exports = {
 
         var orderId = req.params.orderId;
         var state = req.params.state;
+        //console.log(orderId)
 
         if (state == '已完成' || state == '已关闭') {
 
@@ -70,8 +71,6 @@ module.exports = {
                     } else {
                         callback('无权修改该订单');
                     }
-
-
  
                 }],
                 changeOrderState: ['checkChangeAuth', function(callback, results) {
