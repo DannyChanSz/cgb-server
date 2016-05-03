@@ -50,7 +50,7 @@ module.exports = {
             res.end();
         }
     },
-    //获取订单列表[待添加权限]
+    //获取订单列表
     getMyNewOrders: function(req, res, done) {
 
         config.resHead(res);
@@ -117,7 +117,7 @@ module.exports = {
         }
 
     },
-    //获取历史订单列表[待添加权限]
+    //获取历史订单列表
     getMyOldOrders: function(req, res, done) {
         config.resHead(res);
         console.log(req.userInfo)

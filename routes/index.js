@@ -25,6 +25,8 @@ module.exports = function(server, restify, rootDirName) {
 
     require('./frontend/upload.js')(server);
 
+    require('./frontend/pay.js')(server);
+
     /**-------后台路由-------**/
 
     /**
@@ -61,6 +63,3 @@ module.exports = function(server, restify, rootDirName) {
 
 
 }
-
-
-
